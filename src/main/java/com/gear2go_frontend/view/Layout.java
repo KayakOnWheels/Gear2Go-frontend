@@ -1,6 +1,8 @@
-package com.gear2go_frontend;
+package com.gear2go_frontend.view;
 
 
+import com.gear2go_frontend.view.Login;
+import com.gear2go_frontend.view.Products;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.html.H1;
@@ -9,7 +11,6 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
-import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 

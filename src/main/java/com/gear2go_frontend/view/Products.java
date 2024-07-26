@@ -1,22 +1,22 @@
-package com.gear2go_frontend;
+package com.gear2go_frontend.view;
 
 
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
-import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.theme.lumo.LumoUtility;
+
+import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 @Route(value = "products", layout = Layout.class)
-@PageTitle("Image Gallery")
-@Menu(icon = "line-awesome/svg/th-list-solid.svg", order = 0)
+@PageTitle("Product Gallery")
 public class Products extends Main implements HasComponents, HasStyle {
 
     private HorizontalLayout imageContainer;
@@ -41,27 +41,58 @@ public class Products extends Main implements HasComponents, HasStyle {
 
     private void constructUI() {
         addClassNames("image-gallery-view");
-        addClassNames(LumoUtility.MaxWidth.SCREEN_LARGE, LumoUtility.Margin.Horizontal.AUTO,
-                LumoUtility.Padding.Bottom.LARGE, LumoUtility.Padding.Horizontal.LARGE);
+        addClassNames(
+                MaxWidth.SCREEN_LARGE,
+                Margin.Horizontal.AUTO,
+                Padding.Bottom.LARGE,
+                Padding.Horizontal.LARGE);
+
 
         HorizontalLayout container = new HorizontalLayout();
-        container.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.BETWEEN);
+        container.addClassNames(
+                AlignItems.CENTER,
+                JustifyContent.BETWEEN,
+                FlexWrap.WRAP,
+                AlignItems.END
+                );
+
 
         VerticalLayout headerContainer = new VerticalLayout();
-        H2 header = new H2("Beautiful photos");
-        header.addClassNames(LumoUtility.Margin.Bottom.NONE, LumoUtility.Margin.Top.XLARGE, LumoUtility.FontSize.XXXLARGE);
-        Paragraph description = new Paragraph("Royalty free photos and pictures, courtesy of Unsplash");
-        description.addClassNames(LumoUtility.Margin.Bottom.XLARGE, LumoUtility.Margin.Top.NONE, LumoUtility.TextColor.SECONDARY);
+        H2 header = new H2("Products and Services");
+        header.addClassNames(
+                Margin.Bottom.NONE,
+                Margin.Top.XLARGE,
+                FontSize.XXXLARGE
+        );
+        headerContainer.getStyle().setMaxWidth("200px");
+
+        Paragraph description = new Paragraph("Choose items you need");
+        description.addClassNames(
+                Margin.Bottom.SMALL,
+                Margin.Top.NONE,
+                TextColor.SECONDARY
+        );
         headerContainer.add(header, description);
+
 
         Select<String> sortBy = new Select<>();
         sortBy.setLabel("Sort by");
         sortBy.setItems("Popularity", "Newest first", "Oldest first");
         sortBy.setValue("Popularity");
+        sortBy.addClassNames(
+                Margin.Bottom.LARGE
+        );
+
+
 
         imageContainer = new HorizontalLayout();
-        imageContainer.addClassNames(LumoUtility.Gap.MEDIUM, LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP,
-                LumoUtility.JustifyContent.CENTER, LumoUtility.Margin.Top.MEDIUM);
+        imageContainer.addClassNames(
+                Gap.MEDIUM,
+                Display.FLEX,
+                FlexWrap.WRAP,
+                JustifyContent.CENTER,
+                Margin.Top.MEDIUM
+        );
 
         container.add(headerContainer, sortBy);
         add(container, imageContainer);

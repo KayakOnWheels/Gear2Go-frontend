@@ -1,4 +1,4 @@
-package com.gear2go_frontend;
+package com.gear2go_frontend.view;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
