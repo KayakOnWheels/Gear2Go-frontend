@@ -1,5 +1,6 @@
 package com.gear2go_frontend.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.page.WebStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
@@ -19,6 +20,7 @@ import java.util.function.Consumer;
 public class UriService {
 
     private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
 
     public URI buildUri(String url, MultiValueMap<String, String> parameters) {
 
@@ -37,7 +39,7 @@ public class UriService {
                 .toUri();
     }
 
-    public <T> void getList(String endpoint, ParameterizedTypeReference<List<T>> responseType, Consumer<List<T>> onSuccess, Consumer<Throwable> onError) {
+    public <T> void requestSecuredEndpoint(String endpoint, HttpMethod httpMethod, Object request, ParameterizedTypeReference<List<T>> responseType, Consumer<List<T>> onSuccess, Consumer<Throwable> onError) {
         URI uri = buildUri(endpoint);
 
         WebStorage.getItem(WebStorage.Storage.LOCAL_STORAGE, "jwtToken", token -> {
@@ -45,10 +47,10 @@ public class UriService {
             headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
             headers.set("Authorization", "Bearer " + token);
 
-            HttpEntity<String> entity = new HttpEntity<>(headers);
+            HttpEntity<Object> entity = new HttpEntity<>(request, headers);
 
             try {
-                ResponseEntity<List<T>> response = restTemplate.exchange(uri, HttpMethod.GET, entity, responseType);
+                ResponseEntity<List<T>> response = restTemplate.exchange(uri, httpMethod, entity, responseType);
                 List<T> body = response.getBody();
                 List<T> list = body != null ? body : Collections.emptyList();
                 onSuccess.accept(list);

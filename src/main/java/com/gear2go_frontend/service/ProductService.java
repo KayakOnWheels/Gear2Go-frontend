@@ -6,14 +6,13 @@ import com.gear2go_frontend.properties.Gear2GoServerProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +25,6 @@ public class ProductService {
 
     public List<Product> getProductList() throws Exception {
         URI uri = uriService.buildUri(gear2GoServerProperties.getEndpoint() + "product");
-
         return getProducts(uri);
     }
 
@@ -35,31 +33,25 @@ public class ProductService {
         return getProducts(uri);
     }
 
-    public void updateProduct(Product product) throws Exception {
-        URI uri = uriService.buildUri(gear2GoServerProperties.getEndpoint() + "product");
-        ResponseEntity<Void> response = restTemplate.exchange(uri, HttpMethod.PUT, new org.springframework.http.HttpEntity<>(product), Void.class);
-
-        if (response.getStatusCode() != HttpStatus.OK) {
-            throw new Exception(String.valueOf(response.getBody()));
-        }
+    public void updateProduct(Product productRequest, Consumer<List<User>> onSuccess, Consumer<Throwable> onError) {
+        uriService.requestSecuredEndpoint(gear2GoServerProperties.getProduct(), HttpMethod.PUT, productRequest, new ParameterizedTypeReference<List<User>>() {},
+                onSuccess,
+                onError
+        );
     }
 
-    public void addProduct(Product product) throws Exception {
-        URI uri = uriService.buildUri(gear2GoServerProperties.getEndpoint() + "product");
-        ResponseEntity<Void> response = restTemplate.exchange(uri, HttpMethod.POST, new org.springframework.http.HttpEntity<>(product), Void.class);
-
-        if (response.getStatusCode() != HttpStatus.CREATED) {
-            throw new Exception(String.valueOf(response.getBody()));
-        }
+    public void addProduct(Product productRequest, Consumer<List<User>> onSuccess, Consumer<Throwable> onError) {
+        uriService.requestSecuredEndpoint(gear2GoServerProperties.getProduct(), HttpMethod.POST, productRequest, new ParameterizedTypeReference<List<User>>() {},
+                onSuccess,
+                onError
+        );
     }
 
-    public void deleteProduct(Long id) throws Exception {
-        URI uri = uriService.buildUri(gear2GoServerProperties.getEndpoint() + "product/" + id);
-        ResponseEntity<Void> response = restTemplate.exchange(uri, HttpMethod.DELETE, null, Void.class);
-
-        if (response.getStatusCode() != HttpStatus.OK) {
-            throw new Exception(String.valueOf(response.getBody()));
-        }
+    public void deleteProduct(Product productRequest, Consumer<List<User>> onSuccess, Consumer<Throwable> onError) {
+        uriService.requestSecuredEndpoint(gear2GoServerProperties.getProduct(), HttpMethod.DELETE, productRequest, new ParameterizedTypeReference<List<User>>() {},
+                onSuccess,
+                onError
+        );
     }
 
 

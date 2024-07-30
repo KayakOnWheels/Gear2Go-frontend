@@ -5,6 +5,8 @@ import com.gear2go_frontend.service.ProductService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -56,36 +58,39 @@ public class ProductForm extends FormLayout {
     }
 
     protected void save() {
-        Product product = binder.getBean();
-        try {
-            productService.updateProduct(product);
-            productCrudPanel.refresh();
-            setProductFormVisibility(null);
-        } catch (Exception e) {
-            exceptionNotification.showErrorNotification(e.getMessage());
-        }
+        productService.updateProduct(
+                binder.getBean(),
+                userList -> {
+                    productCrudPanel.refresh();
+                    setProductFormVisibility(null);
+                },
+                exception -> {
+                    exceptionNotification.showErrorNotification(exception.getMessage());
+                });
     }
 
     protected void addNew() {
-        Product product = binder.getBean();
-        try {
-            productService.addProduct(product);
-            productCrudPanel.refresh();
-            setProductFormVisibility(null);
-        } catch (Exception e) {
-            exceptionNotification.showErrorNotification(e.getMessage());
-        }
+        productService.addProduct(
+                binder.getBean(),
+                userList -> {
+                    productCrudPanel.refresh();
+                    setProductFormVisibility(null);
+                },
+                exception -> {
+                    exceptionNotification.showErrorNotification(exception.getMessage());
+                });
     }
 
     protected void delete() {
-        Product product = binder.getBean();
-        try {
-            productService.deleteProduct(product.getId());
-            productCrudPanel.refresh();
-            setProductFormVisibility(null);
-        } catch (Exception e) {
-            exceptionNotification.showErrorNotification(e.getMessage());
-        }
+        productService.deleteProduct(
+                binder.getBean(),
+                userList -> {
+                    productCrudPanel.refresh();
+                    setProductFormVisibility(null);
+                },
+                exception -> {
+                    exceptionNotification.showErrorNotification(exception.getMessage());
+                });
     }
 
     public void setProductFormVisibility(Product product) {

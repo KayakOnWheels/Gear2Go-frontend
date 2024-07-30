@@ -1,18 +1,13 @@
 package com.gear2go_frontend.service;
 
-import com.gear2go_frontend.customInterface.TokenCallback;
 import com.gear2go_frontend.domain.AuthenticationRequest;
 import com.gear2go_frontend.domain.AuthenticationResponse;
-import com.gear2go_frontend.domain.Product;
 import com.gear2go_frontend.domain.User;
 import com.gear2go_frontend.properties.Gear2GoServerProperties;
 import com.vaadin.flow.component.page.WebStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,7 +28,7 @@ public class UserService {
 
 
     public void getUserList(Consumer<List<User>> onSuccess, Consumer<Throwable> onError) {
-        uriService.getList(gear2GoServerProperties.getUser(), new ParameterizedTypeReference<List<User>>() {},
+        uriService.requestSecuredEndpoint(gear2GoServerProperties.getUser(), HttpMethod.GET,null, new ParameterizedTypeReference<List<User>>() {},
                 onSuccess,
                 onError
         );
