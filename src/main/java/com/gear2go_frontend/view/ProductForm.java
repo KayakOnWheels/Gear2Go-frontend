@@ -1,6 +1,6 @@
 package com.gear2go_frontend.view;
 
-import com.gear2go_frontend.dto.Product;
+import com.gear2go_frontend.domain.Product;
 import com.gear2go_frontend.service.ProductService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -18,7 +18,8 @@ public class ProductForm extends FormLayout {
     private NumberField weight = new NumberField("Weight");
     private NumberField price = new NumberField("Price");
     private NumberField stock = new NumberField("Stock");
-    private ProductService productService;
+    private final ProductService productService;
+    private final ExceptionNotification exceptionNotification;
 
     @Getter
     private Button saveBtn = new Button("Save");
@@ -29,9 +30,10 @@ public class ProductForm extends FormLayout {
     private Binder<Product> binder = new Binder<Product>(Product.class);
     private ProductCrudPanel productCrudPanel;
 
-    public ProductForm(ProductService productService, ProductCrudPanel productCrudPanel) {
+    public ProductForm(ProductService productService, ExceptionNotification exceptionNotification, ProductCrudPanel productCrudPanel) {
         this.productCrudPanel = productCrudPanel;
         this.productService = productService;
+        this.exceptionNotification = exceptionNotification;
 
         HorizontalLayout buttons = new HorizontalLayout(saveBtn, deleteBtn, addNewBtn);
 
@@ -55,23 +57,35 @@ public class ProductForm extends FormLayout {
 
     protected void save() {
         Product product = binder.getBean();
-        productService.updateProduct(product);
-        productCrudPanel.refresh();
-        setProductFormVisibility(null);
+        try {
+            productService.updateProduct(product);
+            productCrudPanel.refresh();
+            setProductFormVisibility(null);
+        } catch (Exception e) {
+            exceptionNotification.showErrorNotification(e.getMessage());
+        }
     }
 
     protected void addNew() {
         Product product = binder.getBean();
-        productService.addProduct(product);
-        productCrudPanel.refresh();
-        setProductFormVisibility(null);
+        try {
+            productService.addProduct(product);
+            productCrudPanel.refresh();
+            setProductFormVisibility(null);
+        } catch (Exception e) {
+            exceptionNotification.showErrorNotification(e.getMessage());
+        }
     }
 
     protected void delete() {
         Product product = binder.getBean();
-        productService.deleteProduct(product.getId());
-        productCrudPanel.refresh();
-        setProductFormVisibility(null);
+        try {
+            productService.deleteProduct(product.getId());
+            productCrudPanel.refresh();
+            setProductFormVisibility(null);
+        } catch (Exception e) {
+            exceptionNotification.showErrorNotification(e.getMessage());
+        }
     }
 
     public void setProductFormVisibility(Product product) {

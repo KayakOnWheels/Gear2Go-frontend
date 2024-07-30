@@ -12,4 +12,6 @@ import org.springframework.stereotype.Component;
 public class Gear2GoServerProperties {
 
     private String endpoint;
+    private String product;
+    private String user;
 }

@@ -1,4 +1,4 @@
-package com.gear2go_frontend.dto;
+package com.gear2go_frontend.domain;
 
 import lombok.Data;
 
@@ -10,5 +10,6 @@ public class Product {
     private Double weight;
     private Double price;
     private Double stock;
+    private String imageUrl;
 
 }

@@ -1,6 +1,6 @@
 package com.gear2go_frontend.view;
 
-import com.gear2go_frontend.dto.Product;
+import com.gear2go_frontend.domain.Product;
 import com.gear2go_frontend.service.ProductService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
@@ -11,20 +11,24 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 
-@Route(value = "products-crud", layout = Layout.class)
+
+@Route(value = "product-crud", layout = Layout.class)
 public class ProductCrudPanel extends VerticalLayout {
 
-    private ProductService productService;
+    private final ProductService productService;
+    private final ExceptionNotification exceptionNotification;
     private Grid<Product> grid = new Grid<>(Product.class);
     private TextField filter = new TextField();
     private ProductForm productForm;
     private Button addNewBook = new Button("Add new Product");
 
     @Autowired
-    public ProductCrudPanel(ProductService productService) {
+    public ProductCrudPanel(ProductService productService, ExceptionNotification exceptionNotification) {
         this.productService = productService;
-        this.productForm = new ProductForm(productService, this);
+        this.exceptionNotification = exceptionNotification;
+        this.productForm = new ProductForm(productService, exceptionNotification, this);
 
         filter.setPlaceholder("Filter by title");
         filter.setClearButtonVisible(true);
@@ -61,10 +65,20 @@ public class ProductCrudPanel extends VerticalLayout {
     }
 
     public void refresh() {
-        grid.setItems(productService.getProductList());
+
+        try {
+            List<Product> productList = productService.getProductList();
+            grid.setItems(productList);
+        } catch (Exception e) {
+            exceptionNotification.showErrorNotification(e.getMessage());
+        }
     }
 
     private void update() {
-        grid.setItems(productService.findProductsByName(filter.getValue()));
+        try {
+            grid.setItems(productService.findProductsByName(filter.getValue()));
+        } catch (Exception e) {
+            exceptionNotification.showErrorNotification(e.getMessage());
+        }
     }
 }

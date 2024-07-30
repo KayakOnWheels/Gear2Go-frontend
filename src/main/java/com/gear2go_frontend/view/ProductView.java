@@ -14,8 +14,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
@@ -26,10 +24,12 @@ import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 public class ProductView extends Main implements HasComponents, HasStyle {
 
     private HorizontalLayout imageContainer;
+    private final ExceptionNotification exceptionNotification;
     private final ProductService productService;
 
-    public ProductView(ProductService productService) {
+    public ProductView(ProductService productService, ExceptionNotification exceptionNotification) {
         this.productService = productService;
+        this.exceptionNotification = exceptionNotification;
 
         constructUI();
 
@@ -49,7 +49,7 @@ public class ProductView extends Main implements HasComponents, HasStyle {
                 AlignItems.END,
                 JustifyContent.BETWEEN,
                 FlexWrap.WRAP
-                );
+        );
 
 
         VerticalLayout headerContainer = new VerticalLayout();
@@ -80,7 +80,6 @@ public class ProductView extends Main implements HasComponents, HasStyle {
         );
 
 
-
         imageContainer = new HorizontalLayout();
         imageContainer.addClassNames(
                 Gap.MEDIUM,
@@ -93,10 +92,15 @@ public class ProductView extends Main implements HasComponents, HasStyle {
         container.add(headerContainer, sortBy);
         add(container, imageContainer);
 
-        List<Product> productList = productService.getProductList();
-        productList.forEach(product -> {
-            imageContainer.add(new ImageGalleryViewCard(product.getName(), product.getImageUrl(), product.getPrice()));
-        });
+        try {
+            List<Product> productList = productService.getProductList();
+            productList.forEach(product -> {
+                imageContainer.add(new ImageGalleryViewCard(product.getName(), product.getImageUrl(), product.getPrice()));
+            });
+        } catch (Exception e) {
+            exceptionNotification.showErrorNotification(e.getMessage());
+        }
+
 
         Button button = new Button("Add to cart");
         button.addClickListener(clickEvent -> {
