@@ -2,6 +2,7 @@ package com.gear2go_frontend.service;
 
 import com.gear2go_frontend.domain.AuthenticationRequest;
 import com.gear2go_frontend.domain.AuthenticationResponse;
+import com.gear2go_frontend.domain.Product;
 import com.gear2go_frontend.domain.User;
 import com.gear2go_frontend.properties.Gear2GoServerProperties;
 import com.vaadin.flow.component.page.WebStorage;
@@ -34,17 +35,18 @@ public class UserService {
         );
     }
 
-
-    public List<User> findUsersByName(String lastName) {
-        URI uri = uriService.buildUri(gear2GoServerProperties.getEndpoint() + "user/" + lastName);
-        User[] userArray = restTemplate.getForObject(uri, User[].class);
-
-        return userArray != null ? Arrays.asList(userArray) : Collections.emptyList();
+    public void findUsersByName(String lastName, Consumer<List<User>> onSuccess, Consumer<Throwable> onError) {
+        uriService.requestSecuredEndpoint(gear2GoServerProperties.getUser() + lastName, HttpMethod.GET,null, new ParameterizedTypeReference<List<User>>() {},
+                onSuccess,
+                onError
+        );
     }
 
-    public void updateUser(User user) {
-        URI uri = uriService.buildUri(gear2GoServerProperties.getEndpoint() + "user");
-        restTemplate.put(uri, user);
+    public void updateUser(User userRequest, Consumer<List<User>> onSuccess, Consumer<Throwable> onError) {
+        uriService.requestSecuredEndpoint(gear2GoServerProperties.getUser(), HttpMethod.PUT, userRequest, new ParameterizedTypeReference<List<User>>() {},
+                onSuccess,
+                onError
+        );
     }
 
     public void addUser(User user) {
@@ -52,9 +54,11 @@ public class UserService {
         restTemplate.postForEntity(uri, user, Void.class);
     }
 
-    public void deleteUser(Long id) {
-        URI uri = uriService.buildUri(gear2GoServerProperties.getEndpoint() + "user/" + id);
-        restTemplate.delete(uri);
+    public void deleteUser(User userRequest, Consumer<List<User>> onSuccess, Consumer<Throwable> onError) {
+        uriService.requestSecuredEndpoint(gear2GoServerProperties.getUser(), HttpMethod.DELETE, userRequest, new ParameterizedTypeReference<List<User>>() {},
+                onSuccess,
+                onError
+        );
     }
 
     public void getAuthenticationToken(AuthenticationRequest authenticationRequest) {

@@ -1,9 +1,8 @@
 package com.gear2go_frontend.view;
 
 import com.gear2go_frontend.domain.User;
-import com.gear2go_frontend.properties.Gear2GoServerProperties;
-import com.gear2go_frontend.service.UriService;
 import com.gear2go_frontend.service.UserService;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -13,10 +12,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-
-import java.util.List;
-import java.util.function.Consumer;
 
 @Route(value = "user-crud", layout = Layout.class)
 public class UserCrudPanel extends VerticalLayout {
@@ -25,11 +20,14 @@ public class UserCrudPanel extends VerticalLayout {
     private Grid<User> grid = new Grid<>(User.class);
     private TextField filter = new TextField();
     private UserForm userForm;
+    private Button addNewUser = new Button("Add new User");
+    private final ExceptionNotification exceptionNotification;
 
     @Autowired
-    public UserCrudPanel(UserService userService) {
+    public UserCrudPanel(UserService userService, ExceptionNotification exceptionNotification) {
         this.userService = userService;
-        this.userForm = new UserForm(userService, this);
+        this.exceptionNotification = exceptionNotification;
+        this.userForm = new UserForm(userService, this, exceptionNotification);
 
         filter.setPlaceholder("Filter by title");
         filter.setClearButtonVisible(true);
@@ -43,10 +41,21 @@ public class UserCrudPanel extends VerticalLayout {
         userForm.setUserFormVisibility(null);
 
         grid.asSingleSelect().addValueChangeListener(e -> {
+            userForm.getSaveBtn().setVisible(true);
+            userForm.getDeleteBtn().setVisible(true);
+            userForm.getAddNewBtn().setVisible(false);
             userForm.setUserFormVisibility(grid.asSingleSelect().getValue());
         });
 
-        HorizontalLayout toolbar = new HorizontalLayout(filter);
+        addNewUser.addClickListener(e -> {
+            grid.asSingleSelect().clear();
+            userForm.getSaveBtn().setVisible(false);
+            userForm.getDeleteBtn().setVisible(false);
+            userForm.getAddNewBtn().setVisible(true);
+            userForm.setUserFormVisibility(new User());
+        });
+
+        HorizontalLayout toolbar = new HorizontalLayout(filter, addNewUser);
 
         add(toolbar, mainContent);
         setSizeFull();
@@ -59,15 +68,19 @@ public class UserCrudPanel extends VerticalLayout {
                     grid.setItems(userList);
                 },
                 exception -> {
-                    Notification notification = Notification
-                            .show("Something went wrong...");
-                    notification.setPosition(Notification.Position.MIDDLE);
-                    notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    exceptionNotification.showErrorNotification(exception.getMessage());
                 });
     }
 
     private void update() {
-        grid.setItems(userService.findUsersByName(filter.getValue()));
+        userService.findUsersByName(
+                filter.getValue(),
+                userList -> {
+                    grid.setItems(userList);
+                },
+                exception -> {
+                    exceptionNotification.showErrorNotification(exception.getMessage());
+                });
     }
 
 }

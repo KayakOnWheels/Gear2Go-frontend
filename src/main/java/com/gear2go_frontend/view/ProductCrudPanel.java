@@ -22,7 +22,7 @@ public class ProductCrudPanel extends VerticalLayout {
     private Grid<Product> grid = new Grid<>(Product.class);
     private TextField filter = new TextField();
     private ProductForm productForm;
-    private Button addNewBook = new Button("Add new Product");
+    private Button addNewProduct = new Button("Add new Product");
 
     @Autowired
     public ProductCrudPanel(ProductService productService, ExceptionNotification exceptionNotification) {
@@ -49,7 +49,7 @@ public class ProductCrudPanel extends VerticalLayout {
         });
 
 
-        addNewBook.addClickListener(e -> {
+        addNewProduct.addClickListener(e -> {
             grid.asSingleSelect().clear();
             productForm.getSaveBtn().setVisible(false);
             productForm.getDeleteBtn().setVisible(false);
@@ -57,7 +57,7 @@ public class ProductCrudPanel extends VerticalLayout {
             productForm.setProductFormVisibility(new Product());
         });
 
-        HorizontalLayout toolbar = new HorizontalLayout(filter, addNewBook);
+        HorizontalLayout toolbar = new HorizontalLayout(filter, addNewProduct);
 
         add(toolbar, mainContent);
         setSizeFull();

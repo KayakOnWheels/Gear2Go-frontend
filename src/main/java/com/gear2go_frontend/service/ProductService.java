@@ -24,7 +24,7 @@ public class ProductService {
 
 
     public List<Product> getProductList() throws Exception {
-        URI uri = uriService.buildUri(gear2GoServerProperties.getEndpoint() + "product");
+        URI uri = uriService.buildUri(gear2GoServerProperties.getProduct());
         return getProducts(uri);
     }
 
