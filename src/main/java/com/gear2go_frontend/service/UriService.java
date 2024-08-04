@@ -12,7 +12,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Collections;
-import java.util.List;
 import java.util.function.Consumer;
 
 @Service
@@ -39,24 +38,41 @@ public class UriService {
                 .toUri();
     }
 
-    public <T> void requestSecuredEndpoint(String endpoint, HttpMethod httpMethod, Object request, ParameterizedTypeReference<List<T>> responseType, Consumer<List<T>> onSuccess, Consumer<Throwable> onError) {
+    public <T> void requestSecuredEndpoint(String endpoint, HttpMethod httpMethod, Object request, ParameterizedTypeReference<T> responseType, Consumer<T> onSuccess, Consumer<Throwable> onError) {
         URI uri = buildUri(endpoint);
 
         WebStorage.getItem(WebStorage.Storage.LOCAL_STORAGE, "jwtToken", token -> {
+
             HttpHeaders headers = new HttpHeaders();
             headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
             headers.set("Authorization", "Bearer " + token);
 
             HttpEntity<Object> entity = new HttpEntity<>(request, headers);
-
             try {
-                ResponseEntity<List<T>> response = restTemplate.exchange(uri, httpMethod, entity, responseType);
-                List<T> body = response.getBody();
-                List<T> list = body != null ? body : Collections.emptyList();
-                onSuccess.accept(list);
+                ResponseEntity<T> response = restTemplate.exchange(uri, httpMethod, entity, responseType);
+                T body = response.getBody();
+                onSuccess.accept(body);
             } catch (Exception e) {
                 onError.accept(e);
             }
         });
     }
+
+    public <T> void requestEndpoint(String endpoint, HttpMethod httpMethod, Object request, ParameterizedTypeReference<T> responseType, Consumer<T> onSuccess, Consumer<Throwable> onError) {
+        URI uri = buildUri(endpoint);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+            HttpEntity<Object> entity = new HttpEntity<>(request, headers);
+            try {
+                ResponseEntity<T> response = restTemplate.exchange(uri, httpMethod, entity, responseType);
+                T body = response.getBody();
+
+                onSuccess.accept(body);
+            } catch (Exception e) {
+                onError.accept(e);
+            }
+    }
+
 }

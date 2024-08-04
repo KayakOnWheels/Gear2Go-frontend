@@ -1,20 +1,18 @@
 package com.gear2go_frontend.service;
 
-import com.gear2go_frontend.domain.AuthenticationRequest;
-import com.gear2go_frontend.domain.AuthenticationResponse;
-import com.gear2go_frontend.domain.Product;
+import com.gear2go_frontend.dto.AuthenticationRequest;
+import com.gear2go_frontend.dto.AuthenticationResponse;
 import com.gear2go_frontend.domain.User;
 import com.gear2go_frontend.properties.Gear2GoServerProperties;
 import com.vaadin.flow.component.page.WebStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -49,9 +47,8 @@ public class UserService {
         );
     }
 
-    public void addUser(User user) {
-        URI uri = uriService.buildUri(gear2GoServerProperties.getEndpoint() + "user");
-        restTemplate.postForEntity(uri, user, Void.class);
+    public void addUser(User user, Consumer<User> onSuccess, Consumer<Throwable> onError) {
+        uriService.requestEndpoint(gear2GoServerProperties.getRegisterUser(), HttpMethod.POST, user, new ParameterizedTypeReference<User>(){}, onSuccess, onError);
     }
 
     public void deleteUser(User userRequest, Consumer<List<User>> onSuccess, Consumer<Throwable> onError) {
@@ -62,9 +59,16 @@ public class UserService {
     }
 
     public void getAuthenticationToken(AuthenticationRequest authenticationRequest) {
-        URI uri = uriService.buildUri(gear2GoServerProperties.getEndpoint() + "auth/authenticate");
+        URI uri = uriService.buildUri(gear2GoServerProperties.getAuthenticate());
         String token = restTemplate.postForObject(uri, authenticationRequest, AuthenticationResponse.class).token();
         WebStorage.setItem(WebStorage.Storage.LOCAL_STORAGE, "jwtToken", token);
     }
+
+    public void getGuestAuthenticationToken() {
+        URI uri = uriService.buildUri(gear2GoServerProperties.getAuthenticateGuest());
+        String token = restTemplate.postForObject(uri, null, AuthenticationResponse.class).token();
+        WebStorage.setItem(WebStorage.Storage.LOCAL_STORAGE, "jwtToken", token);
+    }
+
 
 }

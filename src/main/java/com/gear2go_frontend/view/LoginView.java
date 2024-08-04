@@ -5,7 +5,6 @@ import com.gear2go_frontend.service.UserService;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.router.Route;
-import lombok.RequiredArgsConstructor;
 
 @Route(value = "login")
 public class Login extends Div {
@@ -15,7 +14,7 @@ public class Login extends Div {
     public Login(UserService userService) {
         this.userService = userService;
         LoginOverlay loginOverlay = new LoginOverlay();
-        loginOverlay.setError(true);
+        loginOverlay.setError(false);
         add(loginOverlay);
         loginOverlay.setOpened(true);
 
