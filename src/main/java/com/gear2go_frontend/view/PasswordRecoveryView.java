@@ -18,7 +18,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import java.util.Arrays;
 
-@Route("password-recovery")
+@Route(value = "password-recovery", layout = Layout.class)
 public class PasswordRecoveryView extends Div implements HasUrlParameter<String> {
 
     private String token;

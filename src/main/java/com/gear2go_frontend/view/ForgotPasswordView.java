@@ -13,7 +13,7 @@ import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-@Route("forgot-password")
+@Route(value = "forgot-password", layout = Layout.class)
 public class ForgotPasswordView extends Div {
 
     private final EmailField emailField = new EmailField("Email");
