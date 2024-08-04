@@ -3,12 +3,12 @@ package com.gear2go_frontend.service;
 import com.gear2go_frontend.dto.AuthenticationRequest;
 import com.gear2go_frontend.dto.AuthenticationResponse;
 import com.gear2go_frontend.domain.User;
+import com.gear2go_frontend.dto.SendRecoveryMailRequest;
 import com.gear2go_frontend.properties.Gear2GoServerProperties;
 import com.vaadin.flow.component.page.WebStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -56,6 +56,10 @@ public class UserService {
                 onSuccess,
                 onError
         );
+    }
+
+    public void sendPasswordRecoveryMail(SendRecoveryMailRequest request, Consumer<String> onSuccess, Consumer<Throwable> onError) {
+        uriService.requestEndpoint(gear2GoServerProperties.getSendRecoveryPasswordMail(), HttpMethod.POST, request, new ParameterizedTypeReference<>(){}, onSuccess, onError);
     }
 
     public void getAuthenticationToken(AuthenticationRequest authenticationRequest) {

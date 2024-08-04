@@ -4,7 +4,7 @@ import com.gear2go_frontend.mapper.ProductMapper;
 import com.gear2go_frontend.dto.ProductResponse;
 import com.gear2go_frontend.dto.UpdateCreateProductRequest;
 import com.gear2go_frontend.service.ProductService;
-import com.gear2go_frontend.view.component.ExceptionNotification;
+import com.gear2go_frontend.view.component.Notification;
 import com.gear2go_frontend.view.form.ProductForm;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ProductCrudView extends VerticalLayout {
 
     private final ProductService productService;
-    private final ExceptionNotification exceptionNotification;
+    private final Notification notification;
     private Grid<ProductResponse> grid = new Grid<>(ProductResponse.class);
     private TextField filter = new TextField();
     private ProductForm productForm;
@@ -28,10 +28,10 @@ public class ProductCrudView extends VerticalLayout {
     private final ProductMapper productMapper;
 
     @Autowired
-    public ProductCrudView(ProductService productService, ExceptionNotification exceptionNotification, ProductMapper productMapper) {
+    public ProductCrudView(ProductService productService, Notification notification, ProductMapper productMapper) {
         this.productService = productService;
-        this.exceptionNotification = exceptionNotification;
-        this.productForm = new ProductForm(productService, exceptionNotification, this);
+        this.notification = notification;
+        this.productForm = new ProductForm(productService, notification, this);
         this.productMapper = productMapper;
         filter.setPlaceholder("Filter by title");
         filter.setClearButtonVisible(true);
@@ -71,12 +71,12 @@ public class ProductCrudView extends VerticalLayout {
 
         productService.getProductList(
                 success -> grid.setItems(success),
-                error -> exceptionNotification.showErrorNotification(error.getMessage()));
+                error -> notification.showErrorNotification(error.getMessage()));
     }
 
     private void update() {
         productService.findProductsByName(filter.getValue(),
                 success -> grid.setItems(success),
-                error -> exceptionNotification.showErrorNotification(error.getMessage()));
+                error -> notification.showErrorNotification(error.getMessage()));
     }
 }

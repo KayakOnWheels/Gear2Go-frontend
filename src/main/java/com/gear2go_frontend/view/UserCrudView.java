@@ -2,7 +2,7 @@ package com.gear2go_frontend.view;
 
 import com.gear2go_frontend.domain.User;
 import com.gear2go_frontend.service.UserService;
-import com.gear2go_frontend.view.component.ExceptionNotification;
+import com.gear2go_frontend.view.component.Notification;
 import com.gear2go_frontend.view.form.UserForm;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
@@ -21,13 +21,13 @@ public class UserCrudView extends VerticalLayout {
     private TextField filter = new TextField();
     private UserForm userForm;
     private Button addNewUser = new Button("Add new User");
-    private final ExceptionNotification exceptionNotification;
+    private final Notification notification;
 
     @Autowired
-    public UserCrudView(UserService userService, ExceptionNotification exceptionNotification) {
+    public UserCrudView(UserService userService, Notification notification) {
         this.userService = userService;
-        this.exceptionNotification = exceptionNotification;
-        this.userForm = new UserForm(userService, this, exceptionNotification);
+        this.notification = notification;
+        this.userForm = new UserForm(userService, this, notification);
 
         filter.setPlaceholder("Filter by title");
         filter.setClearButtonVisible(true);
@@ -68,7 +68,7 @@ public class UserCrudView extends VerticalLayout {
                     grid.setItems(userList);
                 },
                 exception -> {
-                    exceptionNotification.showErrorNotification(exception.getMessage());
+                    notification.showErrorNotification(exception.getMessage());
                 });
     }
 
@@ -79,7 +79,7 @@ public class UserCrudView extends VerticalLayout {
                     grid.setItems(userList);
                 },
                 exception -> {
-                    exceptionNotification.showErrorNotification(exception.getMessage());
+                    notification.showErrorNotification(exception.getMessage());
                 });
     }
 

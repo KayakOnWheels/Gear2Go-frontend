@@ -1,9 +1,19 @@
 package com.gear2go_frontend.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-@NoArgsConstructor(force = true)
-public record UpdateCreateProductRequest(Long id, String name, Float weight, BigDecimal price, Integer stock, String imageUrl) {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public final class UpdateCreateProductRequest {
+    private Long id;
+    private String name;
+    private Float weight;
+    private BigDecimal price;
+    private Integer stock;
+    private String imageUrl;
 }

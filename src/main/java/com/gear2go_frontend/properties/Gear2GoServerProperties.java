@@ -25,6 +25,7 @@ public class Gear2GoServerProperties {
     private String authenticate;
     private String authenticateGuest;
     private String registerUser;
+    private String sendRecoveryPasswordMail;
     private String recoverPassword;
 
 

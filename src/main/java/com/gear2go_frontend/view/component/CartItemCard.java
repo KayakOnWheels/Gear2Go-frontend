@@ -43,15 +43,15 @@ public class CartItemCard extends HorizontalLayout {
         productImage.setMaxHeight(LumoUtility.Height.AUTO);
         productImage.addClassNames(LumoUtility.Padding.MEDIUM);
         try {
-            new URL(product.imageUrl()).toURI();
-            productImage.setSrc(product.imageUrl());
+            new URL(product.getImageUrl()).toURI();
+            productImage.setSrc(product.getImageUrl());
         } catch (Exception e) {
             productImage.setSrc("https://images.unsplash.com/photo-1519681393784-d120267933ba?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80");
         }
 
-        name.setValue(product.name());
+        name.setValue(product.getName());
         name.setReadOnly(true);
-        price.setValue(product.price());
+        price.setValue(product.getPrice());
         price.setReadOnly(true);
         price.setLabel("Unit Price/Day");
         totalPrice.setLabel("Total Item Price In Chosen Period");
@@ -70,7 +70,7 @@ public class CartItemCard extends HorizontalLayout {
 
         quantity.addValueChangeListener(event -> {
             Integer quantity = (int) (event.getValue() - event.getOldValue());
-            cartService.addCartItem(new CartItem(product.id(), quantity, null),
+            cartService.addCartItem(new CartItem(product.getId(), quantity, null),
                     success -> cartView.refresh(),
                     error -> {
                     });

@@ -47,8 +47,8 @@ public class ProductCard extends Div {
         this.product = product;
 
         try {
-            new URL(product.imageUrl());
-            imageUrl = product.imageUrl();
+            new URL(product.getImageUrl());
+            imageUrl = product.getImageUrl();
         } catch (Exception e) {
             imageUrl = "https://images.unsplash.com/photo-1519681393784-d120267933ba?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80";
         }
@@ -61,11 +61,11 @@ public class ProductCard extends Div {
 
         setWidth("300px");
 
-        Image image = new Image(imageUrl, product.name());
+        Image image = new Image(imageUrl, product.getName());
         image.setWidth("100%");
         image.addClassNames(LumoUtility.BorderRadius.SMALL);
 
-        Paragraph titleParagraph = new Paragraph(product.name());
+        Paragraph titleParagraph = new Paragraph(product.getName());
 
         priceTag.getElement().getThemeList().add("badge contrast");
         availabilityTag.getElement().getThemeList().add("pending");
@@ -97,7 +97,7 @@ public class ProductCard extends Div {
             WebStorage.getItem("jwtToken",
                     token -> {
                         cartService.addCartItem(
-                                new CartItem(product.id(), 1, BigDecimal.ZERO),
+                                new CartItem(product.getId(), 1, BigDecimal.ZERO),
                                 cart -> {
                                     retryCounter.set(0);
 
@@ -145,11 +145,11 @@ public class ProductCard extends Div {
     }
 
     public void updatePrices() {
-        priceTag.setText(String.format("$%s", product.price().multiply(BigDecimal.valueOf(ChronoUnit.DAYS.between(rentDate, returnDate)))));
+        priceTag.setText(String.format("$%s", product.getPrice().multiply(BigDecimal.valueOf(ChronoUnit.DAYS.between(rentDate, returnDate)))));
     }
 
     public void updateAvailability() {
-        productService.getProductAvailability(new ProductAvailabilityRequest(product.id(), rentDate, returnDate),
+        productService.getProductAvailability(new ProductAvailabilityRequest(product.getId(), rentDate, returnDate),
                 success -> availabilityTag.setText(String.format("Availability: %s", success)),
                 error -> {
                 });

@@ -9,22 +9,22 @@ public class ProductMapper {
 
     public ProductResponse mapToProductResponse(UpdateCreateProductRequest updateCreateProductRequest) {
         return new ProductResponse(
-                updateCreateProductRequest.id(),
-                updateCreateProductRequest.name(),
-                updateCreateProductRequest.weight(),
-                updateCreateProductRequest.price(),
-                updateCreateProductRequest.stock(),
-                updateCreateProductRequest.imageUrl()
+                updateCreateProductRequest.getId(),
+                updateCreateProductRequest.getName(),
+                updateCreateProductRequest.getWeight(),
+                updateCreateProductRequest.getPrice(),
+                updateCreateProductRequest.getStock(),
+                updateCreateProductRequest.getImageUrl()
         );
     }
     public UpdateCreateProductRequest mapToUpdateCreateRequest(ProductResponse productResponse) {
         return new UpdateCreateProductRequest(
-                productResponse.id(),
-                productResponse.name(),
-                productResponse.weight(),
-                productResponse.price(),
-                productResponse.stock(),
-                productResponse.imageUrl()
+                productResponse.getId(),
+                productResponse.getName(),
+                productResponse.getWeight(),
+                productResponse.getPrice(),
+                productResponse.getStock(),
+                productResponse.getImageUrl()
         );
     }
 

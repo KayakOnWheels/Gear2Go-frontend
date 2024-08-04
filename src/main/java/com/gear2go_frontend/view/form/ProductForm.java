@@ -1,9 +1,8 @@
 package com.gear2go_frontend.view.form;
 
-import com.gear2go_frontend.dto.ProductResponse;
 import com.gear2go_frontend.dto.UpdateCreateProductRequest;
 import com.gear2go_frontend.service.ProductService;
-import com.gear2go_frontend.view.component.ExceptionNotification;
+import com.gear2go_frontend.view.component.Notification;
 import com.gear2go_frontend.view.ProductCrudView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -24,7 +23,7 @@ public class ProductForm extends FormLayout {
     private final BigDecimalField price = new BigDecimalField("Price");
     private final IntegerField stock = new IntegerField("Stock");
     private final ProductService productService;
-    private final ExceptionNotification exceptionNotification;
+    private final Notification notification;
     @Getter
     private final Button saveBtn = new Button("Save");
     @Getter
@@ -35,10 +34,10 @@ public class ProductForm extends FormLayout {
     private final Binder<UpdateCreateProductRequest> binder = new Binder<>(UpdateCreateProductRequest.class);
     private final ProductCrudView productCrudView;
 
-    public ProductForm(ProductService productService, ExceptionNotification exceptionNotification, ProductCrudView productCrudView) {
+    public ProductForm(ProductService productService, Notification notification, ProductCrudView productCrudView) {
         this.productCrudView = productCrudView;
         this.productService = productService;
-        this.exceptionNotification = exceptionNotification;
+        this.notification = notification;
 
         HorizontalLayout buttons = new HorizontalLayout(saveBtn, deleteBtn, addNewBtn);
 
@@ -67,7 +66,7 @@ public class ProductForm extends FormLayout {
                     productCrudView.refresh();
                     setProductFormVisibility(null);
                 },
-                exception -> exceptionNotification.showErrorNotification(exception.getMessage()));
+                exception -> notification.showErrorNotification(exception.getMessage()));
     }
 
     protected void addNew() {
@@ -77,7 +76,7 @@ public class ProductForm extends FormLayout {
                     productCrudView.refresh();
                     setProductFormVisibility(null);
                 },
-                exception -> exceptionNotification.showErrorNotification(exception.getMessage()));
+                exception -> notification.showErrorNotification(exception.getMessage()));
     }
 
     protected void delete() {
@@ -87,7 +86,7 @@ public class ProductForm extends FormLayout {
                     productCrudView.refresh();
                     setProductFormVisibility(null);
                 },
-                exception -> exceptionNotification.showErrorNotification(exception.getMessage()));
+                exception -> notification.showErrorNotification(exception.getMessage()));
     }
 
     public void setProductFormVisibility(UpdateCreateProductRequest product) {

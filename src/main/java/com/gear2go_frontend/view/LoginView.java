@@ -25,5 +25,6 @@ public class LoginView extends Div {
             ));
             getUI().ifPresent(ui -> ui.navigate(ProductGalleryView.class));
         });
+        loginOverlay.addForgotPasswordListener(event -> getUI().ifPresent(ui -> ui.navigate(ForgotPasswordView.class)));
     }
 }
