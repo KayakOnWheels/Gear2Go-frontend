@@ -1,14 +1,13 @@
-package com.gear2go_frontend.view;
+package com.gear2go_frontend.view.form;
 
 import com.gear2go_frontend.domain.User;
-import com.gear2go_frontend.domain.User;
 import com.gear2go_frontend.service.UserService;
-import com.gear2go_frontend.service.UserService;
+import com.gear2go_frontend.view.component.ExceptionNotification;
+import com.gear2go_frontend.view.UserCrudView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import lombok.Getter;
@@ -31,10 +30,10 @@ public class UserForm extends FormLayout {
     @Getter
     private Button addNewBtn = new Button("Add");
     private Binder<User> binder = new Binder<User>(User.class);
-    private UserCrudPanel userCrudPanel;
+    private UserCrudView userCrudView;
 
-    public UserForm(UserService userService, UserCrudPanel userCrudPanel,  ExceptionNotification exceptionNotification) {
-        this.userCrudPanel = userCrudPanel;
+    public UserForm(UserService userService, UserCrudView userCrudView, ExceptionNotification exceptionNotification) {
+        this.userCrudView = userCrudView;
         this.userService = userService;
         this.exceptionNotification = exceptionNotification;
 
@@ -61,34 +60,30 @@ public class UserForm extends FormLayout {
         userService.updateUser(
                 binder.getBean(),
                 userList -> {
-                    userCrudPanel.refresh();
+                    userCrudView.refresh();
                     setUserFormVisibility(null);
                 },
-                exception -> {
-                    exceptionNotification.showErrorNotification(exception.getMessage());
-                });
+                exception -> exceptionNotification.showErrorNotification(exception.getMessage()));
     }
 
     protected void addNew() {
-        try {
-            userService.addUser(binder.getBean());
-            userCrudPanel.refresh();
-            setUserFormVisibility(null);
-        } catch (Exception e) {
-            exceptionNotification.showErrorNotification(e.getMessage());
+            userService.addUser(
+                    binder.getBean(),
+                    userList -> {
+                        userCrudView.refresh();
+                        setUserFormVisibility(null);
+                    },
+                    exception -> exceptionNotification.showErrorNotification(exception.getMessage()));
         }
-    }
 
     protected void delete() {
         userService.deleteUser(
                 binder.getBean(),
                 userList -> {
-                    userCrudPanel.refresh();
+                    userCrudView.refresh();
                     setUserFormVisibility(null);
                 },
-                exception -> {
-                    exceptionNotification.showErrorNotification(exception.getMessage());
-                });
+                exception -> exceptionNotification.showErrorNotification(exception.getMessage()));
     }
 
     public void setUserFormVisibility(User user) {

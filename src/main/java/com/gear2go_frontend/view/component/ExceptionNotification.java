@@ -1,10 +1,12 @@
-package com.gear2go_frontend.view;
+package com.gear2go_frontend.view.component;
 
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 
 @Component
+@RequestScope
 public class ExceptionNotification {
 
 

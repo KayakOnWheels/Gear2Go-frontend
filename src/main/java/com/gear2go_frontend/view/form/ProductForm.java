@@ -1,13 +1,16 @@
-package com.gear2go_frontend.view;
+package com.gear2go_frontend.view.form;
 
-import com.gear2go_frontend.domain.Product;
+import com.gear2go_frontend.dto.ProductResponse;
+import com.gear2go_frontend.dto.UpdateCreateProductRequest;
 import com.gear2go_frontend.service.ProductService;
+import com.gear2go_frontend.view.component.ExceptionNotification;
+import com.gear2go_frontend.view.ProductCrudView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.textfield.BigDecimalField;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -15,25 +18,25 @@ import lombok.Getter;
 
 public class ProductForm extends FormLayout {
 
-    private TextField id = new TextField("Id");
-    private TextField name = new TextField("Name");
-    private NumberField weight = new NumberField("Weight");
-    private NumberField price = new NumberField("Price");
-    private NumberField stock = new NumberField("Stock");
+    private final TextField id = new TextField("Id");
+    private final TextField name = new TextField("Name");
+    private final NumberField weight = new NumberField("Weight");
+    private final BigDecimalField price = new BigDecimalField("Price");
+    private final IntegerField stock = new IntegerField("Stock");
     private final ProductService productService;
     private final ExceptionNotification exceptionNotification;
+    @Getter
+    private final Button saveBtn = new Button("Save");
+    @Getter
+    private final Button deleteBtn = new Button("Delete");
+    @Getter
+    private final Button addNewBtn = new Button("Add");
 
-    @Getter
-    private Button saveBtn = new Button("Save");
-    @Getter
-    private Button deleteBtn = new Button("Delete");
-    @Getter
-    private Button addNewBtn = new Button("Add");
-    private Binder<Product> binder = new Binder<Product>(Product.class);
-    private ProductCrudPanel productCrudPanel;
+    private final Binder<UpdateCreateProductRequest> binder = new Binder<>(UpdateCreateProductRequest.class);
+    private final ProductCrudView productCrudView;
 
-    public ProductForm(ProductService productService, ExceptionNotification exceptionNotification, ProductCrudPanel productCrudPanel) {
-        this.productCrudPanel = productCrudPanel;
+    public ProductForm(ProductService productService, ExceptionNotification exceptionNotification, ProductCrudView productCrudView) {
+        this.productCrudView = productCrudView;
         this.productService = productService;
         this.exceptionNotification = exceptionNotification;
 
@@ -61,39 +64,33 @@ public class ProductForm extends FormLayout {
         productService.updateProduct(
                 binder.getBean(),
                 userList -> {
-                    productCrudPanel.refresh();
+                    productCrudView.refresh();
                     setProductFormVisibility(null);
                 },
-                exception -> {
-                    exceptionNotification.showErrorNotification(exception.getMessage());
-                });
+                exception -> exceptionNotification.showErrorNotification(exception.getMessage()));
     }
 
     protected void addNew() {
         productService.addProduct(
                 binder.getBean(),
                 userList -> {
-                    productCrudPanel.refresh();
+                    productCrudView.refresh();
                     setProductFormVisibility(null);
                 },
-                exception -> {
-                    exceptionNotification.showErrorNotification(exception.getMessage());
-                });
+                exception -> exceptionNotification.showErrorNotification(exception.getMessage()));
     }
 
     protected void delete() {
         productService.deleteProduct(
-                binder.getBean(),
+                Long.valueOf(id.getValue()),
                 userList -> {
-                    productCrudPanel.refresh();
+                    productCrudView.refresh();
                     setProductFormVisibility(null);
                 },
-                exception -> {
-                    exceptionNotification.showErrorNotification(exception.getMessage());
-                });
+                exception -> exceptionNotification.showErrorNotification(exception.getMessage()));
     }
 
-    public void setProductFormVisibility(Product product) {
+    public void setProductFormVisibility(UpdateCreateProductRequest product) {
         binder.setBean(product);
 
         if (product == null) {

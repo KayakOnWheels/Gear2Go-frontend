@@ -2,6 +2,8 @@ package com.gear2go_frontend.view;
 
 import com.gear2go_frontend.domain.User;
 import com.gear2go_frontend.service.UserService;
+import com.gear2go_frontend.view.component.ExceptionNotification;
+import com.gear2go_frontend.view.form.UserForm;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -12,7 +14,7 @@ import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = "user-crud", layout = Layout.class)
-public class UserCrudPanel extends VerticalLayout {
+public class UserCrudView extends VerticalLayout {
 
     private UserService userService;
     private Grid<User> grid = new Grid<>(User.class);
@@ -22,7 +24,7 @@ public class UserCrudPanel extends VerticalLayout {
     private final ExceptionNotification exceptionNotification;
 
     @Autowired
-    public UserCrudPanel(UserService userService, ExceptionNotification exceptionNotification) {
+    public UserCrudView(UserService userService, ExceptionNotification exceptionNotification) {
         this.userService = userService;
         this.exceptionNotification = exceptionNotification;
         this.userForm = new UserForm(userService, this, exceptionNotification);

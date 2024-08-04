@@ -1,7 +1,11 @@
 package com.gear2go_frontend.view;
 
-import com.gear2go_frontend.domain.Product;
+import com.gear2go_frontend.ProductMapper;
+import com.gear2go_frontend.dto.ProductResponse;
+import com.gear2go_frontend.dto.UpdateCreateProductRequest;
 import com.gear2go_frontend.service.ProductService;
+import com.gear2go_frontend.view.component.ExceptionNotification;
+import com.gear2go_frontend.view.form.ProductForm;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -11,25 +15,24 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
 
 @Route(value = "product-crud", layout = Layout.class)
-public class ProductCrudPanel extends VerticalLayout {
+public class ProductCrudView extends VerticalLayout {
 
     private final ProductService productService;
     private final ExceptionNotification exceptionNotification;
-    private Grid<Product> grid = new Grid<>(Product.class);
+    private Grid<ProductResponse> grid = new Grid<>(ProductResponse.class);
     private TextField filter = new TextField();
     private ProductForm productForm;
     private Button addNewProduct = new Button("Add new Product");
+    private final ProductMapper productMapper;
 
     @Autowired
-    public ProductCrudPanel(ProductService productService, ExceptionNotification exceptionNotification) {
+    public ProductCrudView(ProductService productService, ExceptionNotification exceptionNotification, ProductMapper productMapper) {
         this.productService = productService;
         this.exceptionNotification = exceptionNotification;
         this.productForm = new ProductForm(productService, exceptionNotification, this);
-
+        this.productMapper = productMapper;
         filter.setPlaceholder("Filter by title");
         filter.setClearButtonVisible(true);
         filter.setValueChangeMode(ValueChangeMode.EAGER);
@@ -45,7 +48,7 @@ public class ProductCrudPanel extends VerticalLayout {
             productForm.getSaveBtn().setVisible(true);
             productForm.getDeleteBtn().setVisible(true);
             productForm.getAddNewBtn().setVisible(false);
-            productForm.setProductFormVisibility(grid.asSingleSelect().getValue());
+            productForm.setProductFormVisibility(productMapper.mapToUpdateCreateRequest(grid.asSingleSelect().getValue()));
         });
 
 
@@ -54,7 +57,7 @@ public class ProductCrudPanel extends VerticalLayout {
             productForm.getSaveBtn().setVisible(false);
             productForm.getDeleteBtn().setVisible(false);
             productForm.getAddNewBtn().setVisible(true);
-            productForm.setProductFormVisibility(new Product());
+            productForm.setProductFormVisibility(new UpdateCreateProductRequest());
         });
 
         HorizontalLayout toolbar = new HorizontalLayout(filter, addNewProduct);
@@ -66,19 +69,14 @@ public class ProductCrudPanel extends VerticalLayout {
 
     public void refresh() {
 
-        try {
-            List<Product> productList = productService.getProductList();
-            grid.setItems(productList);
-        } catch (Exception e) {
-            exceptionNotification.showErrorNotification(e.getMessage());
-        }
+        productService.getProductList(
+                success -> grid.setItems(success),
+                error -> exceptionNotification.showErrorNotification(error.getMessage()));
     }
 
     private void update() {
-        try {
-            grid.setItems(productService.findProductsByName(filter.getValue()));
-        } catch (Exception e) {
-            exceptionNotification.showErrorNotification(e.getMessage());
-        }
+        productService.findProductsByName(filter.getValue(),
+                success -> grid.setItems(success),
+                error -> exceptionNotification.showErrorNotification(error.getMessage()));
     }
 }

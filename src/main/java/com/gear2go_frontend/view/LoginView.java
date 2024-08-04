@@ -1,17 +1,17 @@
 package com.gear2go_frontend.view;
 
-import com.gear2go_frontend.domain.AuthenticationRequest;
+import com.gear2go_frontend.dto.AuthenticationRequest;
 import com.gear2go_frontend.service.UserService;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.router.Route;
 
 @Route(value = "login")
-public class Login extends Div {
+public class LoginView extends Div {
 
     private final UserService userService;
 
-    public Login(UserService userService) {
+    public LoginView(UserService userService) {
         this.userService = userService;
         LoginOverlay loginOverlay = new LoginOverlay();
         loginOverlay.setError(false);
@@ -23,7 +23,7 @@ public class Login extends Div {
                     e.getUsername(),
                     e.getPassword()
             ));
-            getUI().ifPresent(ui -> ui.navigate(ProductView.class));
+            getUI().ifPresent(ui -> ui.navigate(ProductGalleryView.class));
         });
     }
 }

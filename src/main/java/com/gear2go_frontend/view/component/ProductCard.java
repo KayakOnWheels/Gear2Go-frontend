@@ -1,9 +1,9 @@
-package com.gear2go_frontend.view;
+package com.gear2go_frontend.view.component;
 
 import com.gear2go_frontend.domain.CartItem;
 import com.gear2go_frontend.domain.DateRange;
 import com.gear2go_frontend.domain.Product;
-import com.gear2go_frontend.domain.ProductAvailabilityRequest;
+import com.gear2go_frontend.dto.ProductAvailabilityRequest;
 import com.gear2go_frontend.service.CartService;
 import com.gear2go_frontend.service.ProductService;
 import com.gear2go_frontend.service.UserService;
@@ -17,6 +17,8 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.WebStorage;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -26,7 +28,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
-public class ImageGalleryViewCard extends Div {
+
+public class ProductCard extends Div {
 
 
     private final CartService cartService;
@@ -39,7 +42,7 @@ public class ImageGalleryViewCard extends Div {
     private LocalDate rentDate = LocalDate.now();
     private LocalDate returnDate = LocalDate.now().plusDays(1);
 
-    public ImageGalleryViewCard(Product product, CartService cartService, UserService userService, ProductService productService) {
+    public ProductCard(Product product, CartService cartService, UserService userService, ProductService productService) {
         this.cartService = cartService;
         this.userService = userService;
         this.productService = productService;
@@ -147,7 +150,9 @@ public class ImageGalleryViewCard extends Div {
     }
 
     public void updateAvailability() {
-        availabilityTag.setText(String.format("Availability: %s", productService.getProductAvailability(new ProductAvailabilityRequest(product.getId(), rentDate, returnDate))));
+        productService.getProductAvailability(new ProductAvailabilityRequest(product.getId(), rentDate, returnDate),
+                success -> availabilityTag.setText(String.format("Availability: %s", success)),
+                error -> {});
     }
 
     public void setRentDate(LocalDate rentDate) {

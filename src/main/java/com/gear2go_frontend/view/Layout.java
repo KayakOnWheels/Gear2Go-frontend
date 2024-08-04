@@ -1,8 +1,6 @@
 package com.gear2go_frontend.view;
 
 
-import com.gear2go_frontend.view.Login;
-import com.gear2go_frontend.view.Products;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.html.H1;
@@ -26,7 +24,10 @@ public class Layout extends AppLayout {
         HorizontalLayout navigation = getNavigation();
         navigation.getElement();
 
-        addToNavbar(title, navigation);
+        RouterLink titleLink = new RouterLink(ProductGalleryView.class);
+        titleLink.add(title);
+
+        addToNavbar(titleLink, navigation);
     }
 
     private HorizontalLayout getNavigation() {
@@ -39,10 +40,11 @@ public class Layout extends AppLayout {
                 Width.FULL);
 
         navigation.add(
-                createLink("Products", Products.class),
-                createLink("Sign In", Login.class),
-                createIconLink(VaadinIcon.CART, Products.class),
-                createIconLink(VaadinIcon.USER, Products.class));
+                createLink("Products", ProductGalleryView.class),
+                createLink("Sign In", LoginView.class),
+                createLink("Sign Up", RegisterNewUserView.class),
+                createIconLink(VaadinIcon.CART, CartView.class),
+                createIconLink(VaadinIcon.USER, ProductGalleryView.class));
 
         return navigation;
     }

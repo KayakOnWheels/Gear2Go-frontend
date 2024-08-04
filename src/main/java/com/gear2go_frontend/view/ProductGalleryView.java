@@ -3,10 +3,11 @@ package com.gear2go_frontend.view;
 
 import com.gear2go_frontend.domain.DateRange;
 import com.gear2go_frontend.domain.Product;
-import com.gear2go_frontend.domain.ProductAvailabilityRequest;
 import com.gear2go_frontend.service.CartService;
 import com.gear2go_frontend.service.ProductService;
 import com.gear2go_frontend.service.UserService;
+import com.gear2go_frontend.view.component.ExceptionNotification;
+import com.gear2go_frontend.view.component.ProductCard;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -26,17 +27,17 @@ import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 @Route(value = "product", layout = Layout.class)
 @PageTitle("Product Gallery")
-public class ProductView extends Main implements HasComponents, HasStyle {
+public class ProductGalleryView extends Main implements HasComponents, HasStyle {
 
     private HorizontalLayout imageContainer;
     private final ExceptionNotification exceptionNotification;
     private final ProductService productService;
-    private DatePicker rentDate = new DatePicker("Rent date");
-    private DatePicker returnDate = new DatePicker("Return date");
-    private CartService cartService;
-    private UserService userService;
+    private final DatePicker rentDate = new DatePicker("Rent date");
+    private final DatePicker returnDate = new DatePicker("Return date");
+    private final CartService cartService;
+    private final UserService userService;
 
-    public ProductView(ProductService productService, ExceptionNotification exceptionNotification, CartService cartService, UserService userService) {
+    public ProductGalleryView(ProductService productService, ExceptionNotification exceptionNotification, CartService cartService, UserService userService) {
         this.productService = productService;
         this.exceptionNotification = exceptionNotification;
         this.cartService = cartService;
@@ -93,37 +94,12 @@ public class ProductView extends Main implements HasComponents, HasStyle {
 
         rentDate.addValueChangeListener(e -> {
             returnDate.setMin(e.getValue());
-
-            imageContainer.getChildren()
-                    .filter(element -> element instanceof ImageGalleryViewCard)
-                    .map(element -> (ImageGalleryViewCard) element)
-                    .forEach(card -> {
-                        card.setRentDate(rentDate.getValue());
-                        card.setReturnDate(returnDate.getValue());
-                    });
-            cartService.setDateRange(new DateRange(rentDate.getValue(), returnDate.getValue(), null),
-                    success -> { },
-                    error -> {
-                    });
-
-            updatePricesAndAvailability();
+            setDatesInProductCards();
         });
+
         returnDate.addValueChangeListener(e -> {
             rentDate.setMax(e.getValue());
-
-            imageContainer.getChildren()
-                    .filter(element -> element instanceof ImageGalleryViewCard)
-                    .map(element -> (ImageGalleryViewCard) element)
-                    .forEach(card -> {
-                        card.setRentDate(rentDate.getValue());
-                        card.setReturnDate(returnDate.getValue());
-                    });
-
-            cartService.setDateRange(new DateRange(rentDate.getValue(), returnDate.getValue(), null),
-                    success -> { },
-                    error -> {
-                    });
-            updatePricesAndAvailability();
+            setDatesInProductCards();
         });
 
         HorizontalLayout filterContainer = new HorizontalLayout(rentDate, returnDate, sortBy);
@@ -145,26 +121,37 @@ public class ProductView extends Main implements HasComponents, HasStyle {
         updatePricesAndAvailability();
     }
 
+    private void setDatesInProductCards() {
+        imageContainer.getChildren()
+                .filter(element -> element instanceof ProductCard)
+                .map(element -> (ProductCard) element)
+                .forEach(card -> {
+                    card.setRentDate(rentDate.getValue());
+                    card.setReturnDate(returnDate.getValue());
+                });
+        cartService.setDateRange(new DateRange(rentDate.getValue(), returnDate.getValue(), null),
+                success -> { },
+                error -> {
+                });
+
+        updatePricesAndAvailability();
+    }
+
     private void updatePricesAndAvailability() {
-        try {
-            List<Product> productList = productService.getProductList();
 
-            productList.forEach(product -> {
-                imageContainer.add(new ImageGalleryViewCard(product, cartService, userService, productService));
-            });
-        } catch (Exception e) {
-            exceptionNotification.showErrorNotification(e.getMessage());
-        }
+        productService.getProductList(
+                success -> success.forEach(product -> imageContainer.add(new ProductCard(product, cartService, userService, productService))),
+                error -> exceptionNotification.showErrorNotification(error.getMessage()));
 
         imageContainer.getChildren()
-                .filter(element -> element instanceof ImageGalleryViewCard)
-                .map(element -> (ImageGalleryViewCard) element)
-                .forEach(card -> card.updatePrices());
+                .filter(element -> element instanceof ProductCard)
+                .map(element -> (ProductCard) element)
+                .forEach(ProductCard::updatePrices);
 
         imageContainer.getChildren()
-                .filter(element -> element instanceof ImageGalleryViewCard)
-                .map(element -> (ImageGalleryViewCard) element)
-                .forEach(card -> card.updateAvailability());
+                .filter(element -> element instanceof ProductCard)
+                .map(element -> (ProductCard) element)
+                .forEach(ProductCard::updateAvailability);
     }
 }
 
