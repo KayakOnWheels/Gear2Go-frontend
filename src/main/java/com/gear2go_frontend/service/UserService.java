@@ -3,6 +3,7 @@ package com.gear2go_frontend.service;
 import com.gear2go_frontend.dto.AuthenticationRequest;
 import com.gear2go_frontend.dto.AuthenticationResponse;
 import com.gear2go_frontend.domain.User;
+import com.gear2go_frontend.dto.RecoverPasswordRequest;
 import com.gear2go_frontend.dto.SendRecoveryMailRequest;
 import com.gear2go_frontend.properties.Gear2GoServerProperties;
 import com.vaadin.flow.component.page.WebStorage;
@@ -60,6 +61,10 @@ public class UserService {
 
     public void sendPasswordRecoveryMail(SendRecoveryMailRequest request, Consumer<String> onSuccess, Consumer<Throwable> onError) {
         uriService.requestEndpoint(gear2GoServerProperties.getSendRecoveryPasswordMail(), HttpMethod.POST, request, new ParameterizedTypeReference<>(){}, onSuccess, onError);
+    }
+
+    public void recoverPassword(RecoverPasswordRequest request, Consumer<String> onSuccess, Consumer<Throwable> onError) {
+        uriService.requestEndpoint(gear2GoServerProperties.getRecoverPassword(), HttpMethod.POST, request, new ParameterizedTypeReference<>(){}, onSuccess, onError);
     }
 
     public void getAuthenticationToken(AuthenticationRequest authenticationRequest) {
