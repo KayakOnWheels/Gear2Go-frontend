@@ -1,6 +1,5 @@
 package com.gear2go_frontend.service;
 
-import com.gear2go_frontend.domain.Product;
 import com.gear2go_frontend.dto.ProductAvailabilityRequest;
 import com.gear2go_frontend.dto.ProductResponse;
 import com.gear2go_frontend.dto.UpdateCreateProductRequest;

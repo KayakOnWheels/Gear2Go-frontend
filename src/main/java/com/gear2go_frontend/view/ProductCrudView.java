@@ -1,6 +1,6 @@
 package com.gear2go_frontend.view;
 
-import com.gear2go_frontend.ProductMapper;
+import com.gear2go_frontend.mapper.ProductMapper;
 import com.gear2go_frontend.dto.ProductResponse;
 import com.gear2go_frontend.dto.UpdateCreateProductRequest;
 import com.gear2go_frontend.service.ProductService;

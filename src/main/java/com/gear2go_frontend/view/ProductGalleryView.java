@@ -2,7 +2,6 @@ package com.gear2go_frontend.view;
 
 
 import com.gear2go_frontend.domain.DateRange;
-import com.gear2go_frontend.domain.Product;
 import com.gear2go_frontend.service.CartService;
 import com.gear2go_frontend.service.ProductService;
 import com.gear2go_frontend.service.UserService;
@@ -21,7 +20,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
@@ -130,7 +128,8 @@ public class ProductGalleryView extends Main implements HasComponents, HasStyle 
                     card.setReturnDate(returnDate.getValue());
                 });
         cartService.setDateRange(new DateRange(rentDate.getValue(), returnDate.getValue(), null),
-                success -> { },
+                success -> {
+                },
                 error -> {
                 });
 

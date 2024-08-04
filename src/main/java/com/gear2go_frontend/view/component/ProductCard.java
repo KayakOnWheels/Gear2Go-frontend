@@ -2,8 +2,8 @@ package com.gear2go_frontend.view.component;
 
 import com.gear2go_frontend.domain.CartItem;
 import com.gear2go_frontend.domain.DateRange;
-import com.gear2go_frontend.domain.Product;
 import com.gear2go_frontend.dto.ProductAvailabilityRequest;
+import com.gear2go_frontend.dto.ProductResponse;
 import com.gear2go_frontend.service.CartService;
 import com.gear2go_frontend.service.ProductService;
 import com.gear2go_frontend.service.UserService;
@@ -17,8 +17,6 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.WebStorage;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.RequestScope;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -37,20 +35,20 @@ public class ProductCard extends Div {
     private final ProductService productService;
     Span priceTag = new Span("0");
     Span availabilityTag = new Span();
-    private Product product;
+    private ProductResponse product;
     private String imageUrl;
     private LocalDate rentDate = LocalDate.now();
     private LocalDate returnDate = LocalDate.now().plusDays(1);
 
-    public ProductCard(Product product, CartService cartService, UserService userService, ProductService productService) {
+    public ProductCard(ProductResponse product, CartService cartService, UserService userService, ProductService productService) {
         this.cartService = cartService;
         this.userService = userService;
         this.productService = productService;
         this.product = product;
 
         try {
-            new URL(product.getImageUrl());
-            imageUrl = product.getImageUrl();
+            new URL(product.imageUrl());
+            imageUrl = product.imageUrl();
         } catch (Exception e) {
             imageUrl = "https://images.unsplash.com/photo-1519681393784-d120267933ba?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80";
         }
@@ -63,11 +61,11 @@ public class ProductCard extends Div {
 
         setWidth("300px");
 
-        Image image = new Image(imageUrl, product.getName());
+        Image image = new Image(imageUrl, product.name());
         image.setWidth("100%");
         image.addClassNames(LumoUtility.BorderRadius.SMALL);
 
-        Paragraph titleParagraph = new Paragraph(product.getName());
+        Paragraph titleParagraph = new Paragraph(product.name());
 
         priceTag.getElement().getThemeList().add("badge contrast");
         availabilityTag.getElement().getThemeList().add("pending");
@@ -98,46 +96,47 @@ public class ProductCard extends Div {
         button.addClickListener(clickEvent -> {
             WebStorage.getItem("jwtToken",
                     token -> {
-                                    cartService.addCartItem(
-                                            new CartItem(product.getId(), 1, BigDecimal.ZERO),
-                                            cart -> {
-                                                retryCounter.set(0);
+                        cartService.addCartItem(
+                                new CartItem(product.id(), 1, BigDecimal.ZERO),
+                                cart -> {
+                                    retryCounter.set(0);
 
-                                                cartService.setDateRange(new DateRange(rentDate, returnDate, null),
-                                                        success -> { },
-                                                        error -> {
-                                                        });
-                                                Notification notification = Notification
-                                                        .show("Added to cart");
-                                                notification.setDuration(2000);
-                                                notification.setPosition(Notification.Position.MIDDLE);
-                                                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-
-                                                int newAvailability = Pattern.compile("\\d+")
-                                                        .matcher(availabilityTag.getText())
-                                                        .results()
-                                                        .map(MatchResult::group)
-                                                        .mapToInt(Integer::parseInt)
-                                                        .findFirst()
-                                                        .orElse(-1);
-                                                if (newAvailability != -1) {
-                                                    availabilityTag.setText(String.format("Availability: %s", newAvailability - 1));
-                                                }
-
+                                    cartService.setDateRange(new DateRange(rentDate, returnDate, null),
+                                            success -> {
                                             },
                                             error -> {
-                                                if (error.getMessage().contains("403") && retryCounter.get() < 5) {
-                                                    retryCounter.getAndIncrement();
-                                                    userService.getGuestAuthenticationToken();
-                                                    button.click();
-                                                }
-                                                Notification notification = Notification
-                                                        .show("Error");
-                                                notification.setDuration(2000);
-                                                notification.setPosition(Notification.Position.MIDDLE);
-                                                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                                            }
-                                    );
+                                            });
+                                    Notification notification = Notification
+                                            .show("Added to cart");
+                                    notification.setDuration(2000);
+                                    notification.setPosition(Notification.Position.MIDDLE);
+                                    notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+
+                                    int newAvailability = Pattern.compile("\\d+")
+                                            .matcher(availabilityTag.getText())
+                                            .results()
+                                            .map(MatchResult::group)
+                                            .mapToInt(Integer::parseInt)
+                                            .findFirst()
+                                            .orElse(-1);
+                                    if (newAvailability != -1) {
+                                        availabilityTag.setText(String.format("Availability: %s", newAvailability - 1));
+                                    }
+
+                                },
+                                error -> {
+                                    if (error.getMessage().contains("403") && retryCounter.get() < 5) {
+                                        retryCounter.getAndIncrement();
+                                        userService.getGuestAuthenticationToken();
+                                        button.click();
+                                    }
+                                    Notification notification = Notification
+                                            .show("Error");
+                                    notification.setDuration(2000);
+                                    notification.setPosition(Notification.Position.MIDDLE);
+                                    notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                                }
+                        );
                     });
         });
 
@@ -146,13 +145,14 @@ public class ProductCard extends Div {
     }
 
     public void updatePrices() {
-        priceTag.setText(String.format("$%s", product.getPrice().multiply(BigDecimal.valueOf(ChronoUnit.DAYS.between(rentDate, returnDate)))));
+        priceTag.setText(String.format("$%s", product.price().multiply(BigDecimal.valueOf(ChronoUnit.DAYS.between(rentDate, returnDate)))));
     }
 
     public void updateAvailability() {
-        productService.getProductAvailability(new ProductAvailabilityRequest(product.getId(), rentDate, returnDate),
+        productService.getProductAvailability(new ProductAvailabilityRequest(product.id(), rentDate, returnDate),
                 success -> availabilityTag.setText(String.format("Availability: %s", success)),
-                error -> {});
+                error -> {
+                });
     }
 
     public void setRentDate(LocalDate rentDate) {
