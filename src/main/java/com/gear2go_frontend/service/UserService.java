@@ -1,10 +1,8 @@
 package com.gear2go_frontend.service;
 
-import com.gear2go_frontend.dto.AuthenticationRequest;
-import com.gear2go_frontend.dto.AuthenticationResponse;
+import com.gear2go_frontend.domain.Address;
+import com.gear2go_frontend.dto.*;
 import com.gear2go_frontend.domain.User;
-import com.gear2go_frontend.dto.RecoverPasswordRequest;
-import com.gear2go_frontend.dto.SendRecoveryMailRequest;
 import com.gear2go_frontend.properties.Gear2GoServerProperties;
 import com.vaadin.flow.component.page.WebStorage;
 import lombok.RequiredArgsConstructor;
@@ -77,6 +75,10 @@ public class UserService {
         URI uri = uriService.buildUri(gear2GoServerProperties.getAuthenticateGuest());
         String token = restTemplate.postForObject(uri, null, AuthenticationResponse.class).token();
         WebStorage.setItem(WebStorage.Storage.LOCAL_STORAGE, "jwtToken", token);
+    }
+
+    public void getUserAddressList(Consumer<List<Address>> onSuccess, Consumer<Throwable> onError) {
+        uriService.requestEndpoint(gear2GoServerProperties.getRecoverPassword(), HttpMethod.GET, null, new ParameterizedTypeReference<>(){}, onSuccess, onError);
     }
 
 

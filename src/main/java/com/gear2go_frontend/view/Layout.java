@@ -3,12 +3,14 @@ package com.gear2go_frontend.view;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
@@ -26,6 +28,12 @@ public class Layout extends AppLayout {
 
         RouterLink titleLink = new RouterLink(ProductGalleryView.class);
         titleLink.add(title);
+
+        Div content = new Div();
+        content.setMaxWidth("1400px");
+        content.addClassNames(JustifyContent.EVENLY);
+        content.getStyle().set("max-width", "1200px !important");
+        setContent(content);
 
         addToNavbar(titleLink, navigation);
     }

@@ -4,7 +4,6 @@ import com.gear2go_frontend.domain.CartItem;
 import com.gear2go_frontend.dto.ProductResponse;
 import com.gear2go_frontend.service.CartService;
 import com.gear2go_frontend.service.ProductService;
-import com.gear2go_frontend.view.CartView;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -12,29 +11,28 @@ import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.net.URL;
 
-
+@RequiredArgsConstructor
 public class CartItemCard extends HorizontalLayout {
 
     private Image productImage = new Image();
     private TextField name = new TextField();
+    @Getter
     NumberField quantity = new NumberField();
     BigDecimalField price = new BigDecimalField();
     BigDecimalField totalPrice = new BigDecimalField();
     ProductResponse product;
-    CartView cartView;
+    CartViewComponent cartViewComponent;
 
     private final ProductService productService;
     private final CartService cartService;
 
-    public CartItemCard(CartItem cartItem, ProductService productService, CartService cartService, CartView cartView) {
-        this.productService = productService;
-        this.cartService = cartService;
-        this.cartView = cartView;
 
-
+    public void initialize(CartItem cartItem, CartViewComponent cartViewComponent) {
         productService.getProductById(cartItem.productId(),
                 success -> product = success,
                 error -> error.getMessage());
@@ -71,11 +69,13 @@ public class CartItemCard extends HorizontalLayout {
         quantity.addValueChangeListener(event -> {
             Integer quantity = (int) (event.getValue() - event.getOldValue());
             cartService.addCartItem(new CartItem(product.getId(), quantity, null),
-                    success -> cartView.refresh(),
+                    success -> cartViewComponent.refresh(),
                     error -> {
                     });
         });
+
+        if (cartViewComponent.getRentDate().isReadOnly()) {
+            quantity.setReadOnly(true);
+        }
     }
-
-
 }

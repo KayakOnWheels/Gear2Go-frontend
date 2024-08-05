@@ -1,7 +1,7 @@
 import '@vaadin/polymer-legacy-adapter/style-modules.js';
-import '@vaadin/horizontal-layout/src/vaadin-horizontal-layout.js';
-import '@vaadin/app-layout/src/vaadin-app-layout.js';
 import '@vaadin/vertical-layout/src/vaadin-vertical-layout.js';
+import '@vaadin/app-layout/src/vaadin-app-layout.js';
+import '@vaadin/horizontal-layout/src/vaadin-horizontal-layout.js';
 import '@vaadin/form-layout/src/vaadin-form-layout.js';
 import '@vaadin/common-frontend/ConnectionIndicator.js';
 import '@vaadin/accordion/src/vaadin-accordion.js';
