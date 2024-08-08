@@ -10,7 +10,6 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 @Route("user-data")
 public class UserDataView extends Div {
 
-
     Accordion accordion = new Accordion();
 
     public UserDataView() {

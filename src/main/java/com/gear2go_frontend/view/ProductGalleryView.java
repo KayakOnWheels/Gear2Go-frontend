@@ -2,10 +2,10 @@ package com.gear2go_frontend.view;
 
 
 import com.gear2go_frontend.domain.DateRange;
+import com.gear2go_frontend.factory.UiViewFactory;
 import com.gear2go_frontend.service.CartService;
 import com.gear2go_frontend.service.ProductService;
-import com.gear2go_frontend.service.UserService;
-import com.gear2go_frontend.view.component.Notification;
+import com.gear2go_frontend.view.component.CustomNotification;
 import com.gear2go_frontend.view.component.ProductCard;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
@@ -28,21 +28,20 @@ import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 public class ProductGalleryView extends Main implements HasComponents, HasStyle {
 
     private HorizontalLayout imageContainer;
-    private final Notification notification;
+    private final CustomNotification customNotification;
     private final ProductService productService;
     private final DatePicker rentDate = new DatePicker("Rent date");
     private final DatePicker returnDate = new DatePicker("Return date");
     private final CartService cartService;
-    private final UserService userService;
+    private final UiViewFactory uiViewFactory;
 
-    public ProductGalleryView(ProductService productService, Notification notification, CartService cartService, UserService userService) {
+    public ProductGalleryView(ProductService productService, CustomNotification customNotification, CartService cartService, UiViewFactory uiViewFactory) {
         this.productService = productService;
-        this.notification = notification;
+        this.customNotification = customNotification;
         this.cartService = cartService;
-        this.userService = userService;
+        this.uiViewFactory = uiViewFactory;
 
         constructUI();
-
     }
 
     private void constructUI() {
@@ -139,8 +138,8 @@ public class ProductGalleryView extends Main implements HasComponents, HasStyle 
     private void updatePricesAndAvailability() {
 
         productService.getProductList(
-                success -> success.forEach(product -> imageContainer.add(new ProductCard(product, cartService, userService, productService))),
-                error -> notification.showErrorNotification(error.getMessage()));
+                success -> success.forEach(product -> imageContainer.add(uiViewFactory.createProductCard(product))),
+                error -> customNotification.showErrorNotification(error.getMessage()));
 
         imageContainer.getChildren()
                 .filter(element -> element instanceof ProductCard)

@@ -18,7 +18,6 @@ import java.util.List;
 public class FinaliseOrder extends VerticalLayout {
 
     private List<Address> addressList = new ArrayList<>();
-    private CartViewComponent cartViewComponent;
     private final UiViewFactory uiViewFactory;
     private final UserService userService;
 
@@ -26,7 +25,7 @@ public class FinaliseOrder extends VerticalLayout {
         this.userService = userService;
         this.uiViewFactory = uiViewFactory;
 
-        cartViewComponent = uiViewFactory.createCartViewComponent();
+        CartViewComponent cartViewComponent = uiViewFactory.createCartViewComponent();
         cartViewComponent.getRentDate().setReadOnly(true);
         cartViewComponent.getReturnDate().setReadOnly(true);
         cartViewComponent.setWidth("100%");

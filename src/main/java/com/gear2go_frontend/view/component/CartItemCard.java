@@ -19,8 +19,8 @@ import java.net.URL;
 @RequiredArgsConstructor
 public class CartItemCard extends HorizontalLayout {
 
-    private Image productImage = new Image();
-    private TextField name = new TextField();
+    private final Image productImage = new Image();
+    private final TextField name = new TextField();
     @Getter
     NumberField quantity = new NumberField();
     BigDecimalField price = new BigDecimalField();
@@ -35,7 +35,7 @@ public class CartItemCard extends HorizontalLayout {
     public void initialize(CartItem cartItem, CartViewComponent cartViewComponent) {
         productService.getProductById(cartItem.productId(),
                 success -> product = success,
-                error -> error.getMessage());
+                error -> {});
 
         productImage.setMaxWidth("80px");
         productImage.setMaxHeight(LumoUtility.Height.AUTO);

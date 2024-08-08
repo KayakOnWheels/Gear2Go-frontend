@@ -1,8 +1,9 @@
 package com.gear2go_frontend.view;
 
 import com.gear2go_frontend.domain.User;
+import com.gear2go_frontend.factory.UiViewFactory;
 import com.gear2go_frontend.service.UserService;
-import com.gear2go_frontend.view.component.Notification;
+import com.gear2go_frontend.view.component.CustomNotification;
 import com.gear2go_frontend.view.form.UserForm;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
@@ -16,18 +17,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Route(value = "user-crud", layout = Layout.class)
 public class UserCrudView extends VerticalLayout {
 
-    private UserService userService;
-    private Grid<User> grid = new Grid<>(User.class);
-    private TextField filter = new TextField();
-    private UserForm userForm;
-    private Button addNewUser = new Button("Add new User");
-    private final Notification notification;
+    private final UserService userService;
+    private final Grid<User> grid = new Grid<>(User.class);
+    private final TextField filter = new TextField();
+    private final UserForm userForm;
+    private final CustomNotification customNotification;
+    private final UiViewFactory uiViewFactory;
 
     @Autowired
-    public UserCrudView(UserService userService, Notification notification) {
+    public UserCrudView(UserService userService, CustomNotification customNotification, UiViewFactory uiViewFactory) {
         this.userService = userService;
-        this.notification = notification;
-        this.userForm = new UserForm(userService, this, notification);
+        this.customNotification = customNotification;
+        this.uiViewFactory = uiViewFactory;
+        this.userForm = uiViewFactory.createUserForm(this);
 
         filter.setPlaceholder("Filter by title");
         filter.setClearButtonVisible(true);
@@ -47,6 +49,7 @@ public class UserCrudView extends VerticalLayout {
             userForm.setUserFormVisibility(grid.asSingleSelect().getValue());
         });
 
+        Button addNewUser = new Button("Add new User");
         addNewUser.addClickListener(e -> {
             grid.asSingleSelect().clear();
             userForm.getSaveBtn().setVisible(false);
@@ -64,23 +67,15 @@ public class UserCrudView extends VerticalLayout {
 
     public void refresh() {
         userService.getUserList(
-                userList -> {
-                    grid.setItems(userList);
-                },
-                exception -> {
-                    notification.showErrorNotification(exception.getMessage());
-                });
+                grid::setItems,
+                exception -> customNotification.showErrorNotification(exception.getMessage()));
     }
 
     private void update() {
         userService.findUsersByName(
                 filter.getValue(),
-                userList -> {
-                    grid.setItems(userList);
-                },
-                exception -> {
-                    notification.showErrorNotification(exception.getMessage());
-                });
+                grid::setItems,
+                exception -> customNotification.showErrorNotification(exception.getMessage()));
     }
 
 }

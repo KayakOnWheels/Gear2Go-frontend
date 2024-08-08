@@ -2,7 +2,7 @@ package com.gear2go_frontend.view;
 
 import com.gear2go_frontend.dto.SendRecoveryMailRequest;
 import com.gear2go_frontend.service.UserService;
-import com.gear2go_frontend.view.component.Notification;
+import com.gear2go_frontend.view.component.CustomNotification;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
@@ -18,12 +18,12 @@ public class ForgotPasswordView extends Div {
 
     private final EmailField emailField = new EmailField("Email");
     private final UserService userService;
-    private final Notification notification;
+    private final CustomNotification customNotification;
 
 
-    public ForgotPasswordView(UserService userService, Notification notification) {
+    public ForgotPasswordView(UserService userService, CustomNotification customNotification) {
         this.userService = userService;
-        this.notification = notification;
+        this.customNotification = customNotification;
         setSizeFull();
         addClassNames(LumoUtility.JustifyContent.CENTER, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER, LumoUtility.Background.CONTRAST_5);
         VerticalLayout form = new VerticalLayout();
@@ -39,8 +39,8 @@ public class ForgotPasswordView extends Div {
 
         Button submitButton = new Button("Send recovery email",
                 event -> userService.sendPasswordRecoveryMail(new SendRecoveryMailRequest(emailField.getValue()),
-                        success -> notification.showSuccessNotification("Email sent"),
-                        error -> notification.showErrorNotification(error.getMessage())));
+                        success -> customNotification.showSuccessNotification("Email sent"),
+                        error -> customNotification.showErrorNotification(error.getMessage())));
 
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 

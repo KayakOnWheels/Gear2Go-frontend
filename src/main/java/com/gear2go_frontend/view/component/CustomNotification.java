@@ -6,7 +6,7 @@ import org.springframework.web.context.annotation.RequestScope;
 
 @Component
 @RequestScope
-public class Notification {
+public class CustomNotification {
 
 
     public void showErrorNotification(String message) {

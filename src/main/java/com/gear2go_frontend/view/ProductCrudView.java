@@ -1,10 +1,11 @@
 package com.gear2go_frontend.view;
 
+import com.gear2go_frontend.factory.UiViewFactory;
 import com.gear2go_frontend.mapper.ProductMapper;
 import com.gear2go_frontend.dto.ProductResponse;
 import com.gear2go_frontend.dto.UpdateCreateProductRequest;
 import com.gear2go_frontend.service.ProductService;
-import com.gear2go_frontend.view.component.Notification;
+import com.gear2go_frontend.view.component.CustomNotification;
 import com.gear2go_frontend.view.form.ProductForm;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
@@ -20,19 +21,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ProductCrudView extends VerticalLayout {
 
     private final ProductService productService;
-    private final Notification notification;
-    private Grid<ProductResponse> grid = new Grid<>(ProductResponse.class);
-    private TextField filter = new TextField();
-    private ProductForm productForm;
-    private Button addNewProduct = new Button("Add new Product");
+    private final CustomNotification customNotification;
+    private final Grid<ProductResponse> grid = new Grid<>(ProductResponse.class);
+    private final TextField filter = new TextField();
+    private final ProductForm productForm;
     private final ProductMapper productMapper;
+    private final UiViewFactory uiViewFactory;
 
-    @Autowired
-    public ProductCrudView(ProductService productService, Notification notification, ProductMapper productMapper) {
+
+    public ProductCrudView(ProductService productService, CustomNotification customNotification, ProductMapper productMapper, UiViewFactory uiViewFactory) {
         this.productService = productService;
-        this.notification = notification;
-        this.productForm = new ProductForm(productService, notification, this);
+        this.customNotification = customNotification;
         this.productMapper = productMapper;
+        this.uiViewFactory = uiViewFactory;
+        this.productForm = uiViewFactory.createProductForm(this);
+
         filter.setPlaceholder("Filter by title");
         filter.setClearButtonVisible(true);
         filter.setValueChangeMode(ValueChangeMode.EAGER);
@@ -52,6 +55,7 @@ public class ProductCrudView extends VerticalLayout {
         });
 
 
+        Button addNewProduct = new Button("Add new Product");
         addNewProduct.addClickListener(e -> {
             grid.asSingleSelect().clear();
             productForm.getSaveBtn().setVisible(false);
@@ -70,13 +74,13 @@ public class ProductCrudView extends VerticalLayout {
     public void refresh() {
 
         productService.getProductList(
-                success -> grid.setItems(success),
-                error -> notification.showErrorNotification(error.getMessage()));
+                grid::setItems,
+                error -> customNotification.showErrorNotification(error.getMessage()));
     }
 
     private void update() {
         productService.findProductsByName(filter.getValue(),
-                success -> grid.setItems(success),
-                error -> notification.showErrorNotification(error.getMessage()));
+                grid::setItems,
+                error -> customNotification.showErrorNotification(error.getMessage()));
     }
 }

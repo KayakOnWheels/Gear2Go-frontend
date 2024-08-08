@@ -3,7 +3,6 @@ package com.gear2go_frontend.view.component;
 import com.gear2go_frontend.domain.DateRange;
 import com.gear2go_frontend.factory.UiViewFactory;
 import com.gear2go_frontend.service.CartService;
-import com.gear2go_frontend.service.ProductService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.Div;
@@ -19,19 +18,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CartViewComponent extends HorizontalLayout {
 
-    private H1 titleHeader = new H1("Cart");
-    private H2 summaryHeader = new H2("Summary");
+    private final H1 titleHeader = new H1("Cart");
+    private final H2 summaryHeader = new H2("Summary");
     @Getter
-    private DatePicker rentDate = new DatePicker("Rent date");
+    private final DatePicker rentDate = new DatePicker("Rent date");
     @Getter
-    private DatePicker returnDate = new DatePicker("Return date");
-    private BigDecimalField totalPrice = new BigDecimalField("Total");
+    private final DatePicker returnDate = new DatePicker("Return date");
+    private final BigDecimalField totalPrice = new BigDecimalField("Total");
     @Getter
-    private Button checkoutBtn = new Button("Checkout");
-    private VerticalLayout cartItemList = new VerticalLayout();
-    private VerticalLayout summary = new VerticalLayout();
+    private final Button checkoutBtn = new Button("Checkout");
+    private final VerticalLayout cartItemList = new VerticalLayout();
+    private final VerticalLayout summary = new VerticalLayout();
     private final CartService cartService;
-    private final ProductService productService;
     private final UiViewFactory uiViewFactory;
 
 
@@ -85,7 +83,6 @@ public class CartViewComponent extends HorizontalLayout {
                     returnDate.setValue(cart.returnDate());
                 },
                 error -> {
-                    String er = error.getMessage();
                 });
     }
 

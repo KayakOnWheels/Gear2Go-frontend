@@ -2,7 +2,7 @@ package com.gear2go_frontend.view.form;
 
 import com.gear2go_frontend.domain.User;
 import com.gear2go_frontend.service.UserService;
-import com.gear2go_frontend.view.component.Notification;
+import com.gear2go_frontend.view.component.CustomNotification;
 import com.gear2go_frontend.view.UserCrudView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -21,7 +21,7 @@ public class UserForm extends FormLayout {
     private final TextField password = new TextField("Password");
     private final TextField accessLevel = new TextField("Access Level");
     private final UserService userService;
-    private final Notification notification;
+    private final CustomNotification customNotification;
 
     @Getter
     private Button saveBtn = new Button("Save");
@@ -32,10 +32,13 @@ public class UserForm extends FormLayout {
     private Binder<User> binder = new Binder<User>(User.class);
     private UserCrudView userCrudView;
 
-    public UserForm(UserService userService, UserCrudView userCrudView, Notification notification) {
-        this.userCrudView = userCrudView;
+    public UserForm(UserService userService, CustomNotification customNotification) {
         this.userService = userService;
-        this.notification = notification;
+        this.customNotification = customNotification;
+    }
+
+    public void initialize(UserCrudView userCrudView) {
+        this.userCrudView = userCrudView;
 
         HorizontalLayout buttons = new HorizontalLayout(saveBtn, deleteBtn, addNewBtn);
 
@@ -63,7 +66,7 @@ public class UserForm extends FormLayout {
                     userCrudView.refresh();
                     setUserFormVisibility(null);
                 },
-                exception -> notification.showErrorNotification(exception.getMessage()));
+                exception -> customNotification.showErrorNotification(exception.getMessage()));
     }
 
     protected void addNew() {
@@ -73,7 +76,7 @@ public class UserForm extends FormLayout {
                         userCrudView.refresh();
                         setUserFormVisibility(null);
                     },
-                    exception -> notification.showErrorNotification(exception.getMessage()));
+                    exception -> customNotification.showErrorNotification(exception.getMessage()));
         }
 
     protected void delete() {
@@ -83,7 +86,7 @@ public class UserForm extends FormLayout {
                     userCrudView.refresh();
                     setUserFormVisibility(null);
                 },
-                exception -> notification.showErrorNotification(exception.getMessage()));
+                exception -> customNotification.showErrorNotification(exception.getMessage()));
     }
 
     public void setUserFormVisibility(User user) {

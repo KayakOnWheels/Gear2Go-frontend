@@ -29,23 +29,26 @@ import java.util.regex.Pattern;
 
 public class ProductCard extends Div {
 
-
     private final CartService cartService;
     private final UserService userService;
     private final ProductService productService;
     Span priceTag = new Span("0");
     Span availabilityTag = new Span();
     private ProductResponse product;
-    private String imageUrl;
     private LocalDate rentDate = LocalDate.now();
     private LocalDate returnDate = LocalDate.now().plusDays(1);
 
-    public ProductCard(ProductResponse product, CartService cartService, UserService userService, ProductService productService) {
+
+    public ProductCard(CartService cartService, UserService userService, ProductService productService) {
         this.cartService = cartService;
         this.userService = userService;
         this.productService = productService;
-        this.product = product;
+    }
 
+
+    public void initialize(ProductResponse productResponse) {
+        this.product = productResponse;
+        String imageUrl;
         try {
             new URL(product.getImageUrl());
             imageUrl = product.getImageUrl();
@@ -90,63 +93,67 @@ public class ProductCard extends Div {
                 LumoUtility.Margin.Bottom.NONE);
 
 
-        Button button = new Button("Add to cart");
-        AtomicInteger retryCounter = new AtomicInteger(0);
-
-        button.addClickListener(clickEvent -> {
-            WebStorage.getItem("jwtToken",
-                    token -> {
-                        cartService.addCartItem(
-                                new CartItem(product.getId(), 1, BigDecimal.ZERO),
-                                cart -> {
-                                    retryCounter.set(0);
-
-                                    cartService.setDateRange(new DateRange(rentDate, returnDate, null),
-                                            success -> {
-                                            },
-                                            error -> {
-                                            });
-                                    Notification notification = Notification
-                                            .show("Added to cart");
-                                    notification.setDuration(2000);
-                                    notification.setPosition(Notification.Position.MIDDLE);
-                                    notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-
-                                    int newAvailability = Pattern.compile("\\d+")
-                                            .matcher(availabilityTag.getText())
-                                            .results()
-                                            .map(MatchResult::group)
-                                            .mapToInt(Integer::parseInt)
-                                            .findFirst()
-                                            .orElse(-1);
-                                    if (newAvailability != -1) {
-                                        availabilityTag.setText(String.format("Availability: %s", newAvailability - 1));
-                                    }
-
-                                },
-                                error -> {
-                                    if (error.getMessage().contains("403") && retryCounter.get() < 5) {
-                                        retryCounter.getAndIncrement();
-                                        userService.getGuestAuthenticationToken();
-                                        button.click();
-                                    }
-                                    Notification notification = Notification
-                                            .show("Error");
-                                    notification.setDuration(2000);
-                                    notification.setPosition(Notification.Position.MIDDLE);
-                                    notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                                }
-                        );
-                    });
-        });
+        Button button = createAddToCartButton();
 
         VerticalLayout tagContainer = new VerticalLayout(priceTag, availabilityTag);
         add(image, titleParagraph, tagContainer, button);
     }
 
+
+    private Button createAddToCartButton() {
+        Button button = new Button("Add to cart");
+        AtomicInteger retryCounter = new AtomicInteger(0);
+
+        button.addClickListener(clickEvent -> WebStorage.getItem("jwtToken",
+                token -> cartService.addCartItem(
+                        new CartItem(product.getId(), 1, BigDecimal.ZERO),
+                        cart -> {
+                            retryCounter.set(0);
+
+                            cartService.setDateRange(new DateRange(rentDate, returnDate, null),
+                                    success -> {
+                                    },
+                                    error -> {
+                                    });
+                            Notification notification = Notification
+                                    .show("Added to cart");
+                            notification.setDuration(2000);
+                            notification.setPosition(Notification.Position.MIDDLE);
+                            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+
+                            int newAvailability = Pattern.compile("\\d+")
+                                    .matcher(availabilityTag.getText())
+                                    .results()
+                                    .map(MatchResult::group)
+                                    .mapToInt(Integer::parseInt)
+                                    .findFirst()
+                                    .orElse(-1);
+                            if (newAvailability != -1) {
+                                availabilityTag.setText(String.format("Availability: %s", newAvailability - 1));
+                            }
+
+                        },
+                        error -> {
+                            if (error.getMessage().contains("403") && retryCounter.get() < 5) {
+                                retryCounter.getAndIncrement();
+                                userService.getGuestAuthenticationToken();
+                                button.click();
+                            }
+                            Notification notification = Notification
+                                    .show("Error");
+                            notification.setDuration(2000);
+                            notification.setPosition(Notification.Position.MIDDLE);
+                            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        }
+                )));
+        return button;
+    }
+
+
     public void updatePrices() {
         priceTag.setText(String.format("$%s", product.getPrice().multiply(BigDecimal.valueOf(ChronoUnit.DAYS.between(rentDate, returnDate)))));
     }
+
 
     public void updateAvailability() {
         productService.getProductAvailability(new ProductAvailabilityRequest(product.getId(), rentDate, returnDate),
@@ -155,9 +162,11 @@ public class ProductCard extends Div {
                 });
     }
 
+
     public void setRentDate(LocalDate rentDate) {
         this.rentDate = rentDate;
     }
+
 
     public void setReturnDate(LocalDate returnDate) {
         this.returnDate = returnDate;

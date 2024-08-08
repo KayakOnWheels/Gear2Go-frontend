@@ -14,7 +14,7 @@ public class AddressForm extends Div {
 
     private final Binder<Address> binder = new Binder<>(Address.class);
     @Getter
-    Button save = new Button("Save");
+    private Button save = new Button("Save");
 
     public AddressForm() {
         TextField street = new TextField("Street");

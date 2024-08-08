@@ -2,7 +2,7 @@ package com.gear2go_frontend.view;
 
 import com.gear2go_frontend.domain.User;
 import com.gear2go_frontend.service.UserService;
-import com.gear2go_frontend.view.component.Notification;
+import com.gear2go_frontend.view.component.CustomNotification;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
@@ -18,18 +18,15 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 @Route("register")
 public class RegisterNewUserView extends Div {
 
-
-    private final EmailField mail = new EmailField("Email");
     private final PasswordField password = new PasswordField("Password");
     private final PasswordField repeatPasswordField = new PasswordField("Repeat Password");
     private final Binder<User> binder = new Binder<>(User.class);
-    private final Notification notification;
-
     private final UserService userService;
+    private final CustomNotification customNotification;
 
-    public RegisterNewUserView(UserService userService, Notification notification) {
+    public RegisterNewUserView(UserService userService, CustomNotification customNotification) {
         this.userService = userService;
-        this.notification = notification;
+        this.customNotification = customNotification;
 
         setSizeFull();
         addClassNames(LumoUtility.JustifyContent.CENTER, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER, LumoUtility.Background.CONTRAST_5);
@@ -40,6 +37,7 @@ public class RegisterNewUserView extends Div {
         form.addClassNames(LumoUtility.Border.ALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Background.BASE);
         H1 header = new H1("Create Account");
 
+        EmailField mail = new EmailField("Email");
         mail.setWidth("300px");
         password.setWidth("300px");
         repeatPasswordField.setWidth("300px");
@@ -57,13 +55,12 @@ public class RegisterNewUserView extends Div {
             }
             userService.addUser(binder.getBean(),
                     success -> getUI().ifPresent(ui -> ui.navigate(ProductGalleryView.class)),
-                    error -> notification.showErrorNotification("Something went wrong"));
+                    error -> customNotification.showErrorNotification("Something went wrong"));
         });
-
         submitButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
 
         form.add(header, mail, password, repeatPasswordField, submitButton);
         add(form);
     }
+
 }
