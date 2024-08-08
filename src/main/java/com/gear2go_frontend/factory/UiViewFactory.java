@@ -6,7 +6,6 @@ import com.gear2go_frontend.service.CartService;
 import com.gear2go_frontend.service.ProductService;
 import com.gear2go_frontend.service.UserService;
 import com.gear2go_frontend.view.ProductCrudView;
-import com.gear2go_frontend.view.RegisterNewUserView;
 import com.gear2go_frontend.view.UserCrudView;
 import com.gear2go_frontend.view.component.CartItemCard;
 import com.gear2go_frontend.view.component.CartViewComponent;
