@@ -1,4 +1,4 @@
-package com.gear2go_frontend.gear2go_frontend;
+package com.gear2go_frontend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
